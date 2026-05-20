@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BMHome Setup</title>
+  <link rel="icon" href="./favicon.ico" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --green: #10b981;
+      --shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top left, #e0f2fe 0, transparent 28rem), var(--bg);
+      line-height: 1.5;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 34px 18px 54px; }
+    .hero {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 22px;
+      align-items: center;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(229,231,235,0.9);
+      border-radius: 30px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .logo { width: 96px; height: 96px; border-radius: 24px; box-shadow: 0 10px 24px rgba(15,23,42,0.16); }
+    .eyebrow { margin: 0 0 4px; color: var(--blue); font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(34px, 6vw, 56px); line-height: 1; letter-spacing: -0.055em; }
+    .tagline { margin: 12px 0 0; color: var(--muted); font-size: 18px; max-width: 720px; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 22px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: 0 8px 24px rgba(15,23,42,0.045); }
+    .step { display: grid; grid-template-columns: 42px 1fr; gap: 16px; }
+    .num { width: 42px; height: 42px; border-radius: 50%; background: #dbeafe; color: var(--blue-dark); display:flex; align-items:center; justify-content:center; font-weight: 800; }
+    h2, h3 { margin: 0; letter-spacing: -0.025em; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 20px; }
+    p { margin: 10px 0 0; color: var(--muted); }
+    ul { margin: 12px 0 0; color: var(--muted); padding-left: 20px; }
+    label { display:block; margin: 16px 0 7px; font-weight: 700; }
+    input[type="text"], input[type="password"], input[type="number"] {
+      width: 100%; border: 1px solid var(--line); border-radius: 14px; padding: 13px 14px; font-size: 15px; background: #fff;
+      outline: none;
+    }
+    input:focus { border-color: #93c5fd; box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
+    .hint { font-size: 13px; margin-top: 6px; color: var(--muted); }
+    .toggles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 14px; }
+    .toggle { display:flex; align-items:center; gap: 10px; border: 1px solid var(--line); border-radius: 14px; padding: 12px; background: #fbfdff; font-weight: 700; }
+    .toggle input { width: 18px; height: 18px; accent-color: var(--blue); }
+    .row { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .actions { display:flex; flex-wrap: wrap; align-items:center; gap: 12px; margin-top: 18px; }
+    button { border: 0; border-radius: 16px; padding: 13px 18px; font-weight: 800; font-size: 15px; cursor: pointer; }
+    .primary { background: var(--blue); color: white; box-shadow: 0 10px 20px rgba(37,99,235,0.22); }
+    .primary:hover { background: var(--blue-dark); }
+    .secondary { background: #eef2ff; color: #1e3a8a; }
+    .status { margin-top: 12px; color: var(--muted); font-weight: 700; min-height: 24px; }
+    .pill { display:inline-flex; align-items:center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: #ecfdf5; color: #065f46; font-size: 13px; font-weight: 800; margin-top: 12px; }
+    footer { text-align:center; color: var(--muted); margin-top: 24px; font-size: 13px; }
+    @media (max-width: 640px) { .hero { grid-template-columns: 1fr; text-align:center; } .logo { margin: 0 auto; } .step { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <img class="logo" src="./apple-touch-icon.png" alt="BMHome logo" />
+      <div>
+        <p class="eyebrow">BMHome setup</p>
+        <h1>BMHome</h1>
+        <p class="tagline">Native Apple Home control for your BM — lock, precondition, range and battery, with BMW CarData in the background.</p>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="BMHome setup steps">
+      <div class="card">
+        <h2>Welcome</h2>
+        <p>Set up BMW CarData access and choose how your car appears inside Apple Home. BMHome is designed to be quiet, reliable and child-bridge friendly.</p>
+      </div>
+
+      <div class="card step">
+        <div class="num">1</div>
+        <div>
+          <h3>Create your BMW CarData Client ID</h3>
+          <p>Open the BMW CarData Portal, sign in with your BMW ID, register an application, then copy the Client ID.</p>
+          <ul>
+            <li>Use a browser rather than the My BMW app.</li>
+            <li>Keep the Client ID private.</li>
+          </ul>
+          <label for="clientId">BMW CarData Client ID</label>
+          <input id="clientId" name="clientId" type="password" autocomplete="off" placeholder="Paste your Client ID here" />
+          <div class="hint">Required. This is used by BMHome to authenticate with BMW CarData.</div>
+        </div>
+      </div>
+
+      <div class="card step">
+        <div class="num">2</div>
+        <div>
+          <h3>Choose your vehicle</h3>
+          <p>Enter a VIN if you want BMHome to bind to a specific vehicle. Leave it blank to auto-detect the first available vehicle.</p>
+          <div class="row">
+            <div>
+              <label for="name">Apple Home name</label>
+              <input id="name" name="name" type="text" placeholder="BMHome" />
+            </div>
+            <div>
+              <label for="vin">VIN optional</label>
+              <input id="vin" name="vin" type="text" maxlength="17" placeholder="WBA00000000000000" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card step">
+        <div class="num">3</div>
+        <div>
+          <h3>Confirm Apple Home features</h3>
+          <p>Select the tiles and services you want BMHome to publish to Apple Home.</p>
+          <div class="toggles">
+            <label class="toggle"><input id="showLock" type="checkbox" checked /> Door Lock</label>
+            <label class="toggle"><input id="showBattery" type="checkbox" checked /> Battery SOC</label>
+            <label class="toggle"><input id="showRange" type="checkbox" checked /> Estimated Range</label>
+            <label class="toggle"><input id="showPreconditioning" type="checkbox" checked /> Cabin Preconditioning</label>
+            <label class="toggle"><input id="showCharging" type="checkbox" checked /> Charging State</label>
+            <label class="toggle"><input id="showCableSensor" type="checkbox" checked /> Cable Connected Sensor</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card step">
+        <div class="num">4</div>
+        <div>
+          <h3>Connection behaviour</h3>
+          <p>MQTT streaming gives BMHome the best live experience. Polling remains useful as a fallback.</p>
+          <div class="toggles">
+            <label class="toggle"><input id="enableStreaming" type="checkbox" checked /> Enable MQTT Streaming</label>
+          </div>
+          <label for="pollingInterval">Polling fallback interval seconds</label>
+          <input id="pollingInterval" name="pollingInterval" type="number" min="60" step="10" value="180" />
+          <div class="hint">Most users should leave this at 180 seconds.</div>
+        </div>
+      </div>
+
+      <div class="card step">
+        <div class="num">5</div>
+        <div>
+          <h3>Save settings</h3>
+          <p>Press Save settings to write this configuration into Homebridge. If Homebridge asks to restart, allow it to restart so your Apple Home tiles update.</p>
+          <div class="actions">
+            <button class="primary" id="save" type="button">Save settings</button>
+            <button class="secondary" id="load" type="button">Reload current settings</button>
+          </div>
+          <div class="status" id="status" role="status"></div>
+        </div>
+      </div>
+
+      <div class="card step">
+        <div class="num">6</div>
+        <div>
+          <h3>Occasional maintenance</h3>
+          <p>BMHome is designed to run quietly in the background. Occasionally, Homebridge may show updates for the operating system, Node.js or BMHome itself.</p>
+          <p>Applying updates every few months is recommended and usually takes only a few minutes.</p>
+          <div class="pill">Apple Home first · Child bridge friendly · Low resource</div>
+        </div>
+      </div>
+    </section>
+    <footer>BMHome by Kernowek Consulting · Native Apple Home control for your BM.</footer>
+  </main>
+
+  <script>
+    const defaults = {
+      platform: 'BMHome',
+      name: 'BMHome',
+      clientId: '',
+      vin: '',
+      enableStreaming: true,
+      pollingInterval: 180,
+      showLock: true,
+      showBattery: true,
+      showRange: true,
+      showPreconditioning: true,
+      showCharging: true,
+      showCableSensor: true
+    };
+
+    const ids = Object.keys(defaults).filter((key) => key !== 'platform');
+    const $ = (id) => document.getElementById(id);
+    const status = (message) => { $('status').textContent = message; };
+
+    function getHomebridgeApi() {
+      return window.homebridge || window.HomebridgePluginUi || null;
+    }
+
+    function readForm() {
+      const config = { ...defaults };
+      ids.forEach((id) => {
+        const el = $(id);
+        if (!el) return;
+        if (el.type === 'checkbox') config[id] = el.checked;
+        else if (el.type === 'number') config[id] = Number(el.value || defaults[id]);
+        else config[id] = el.value.trim();
+      });
+      config.platform = 'BMHome';
+      return config;
+    }
+
+    function writeForm(config) {
+      const merged = { ...defaults, ...(config || {}) };
+      if (merged.platform === 'BMWHome') merged.platform = 'BMHome';
+      ids.forEach((id) => {
+        const el = $(id);
+        if (!el) return;
+        if (el.type === 'checkbox') el.checked = Boolean(merged[id]);
+        else el.value = merged[id] ?? defaults[id] ?? '';
+      });
+    }
+
+    async function loadConfig() {
+      const hb = getHomebridgeApi();
+      if (!hb || typeof hb.getPluginConfig !== 'function') {
+        writeForm(defaults);
+        status('Running outside Homebridge UI. Preview mode only.');
+        return;
+      }
+      try {
+        hb.showSpinner && hb.showSpinner();
+        const configBlocks = await hb.getPluginConfig();
+        const existing = Array.isArray(configBlocks) && configBlocks.length ? configBlocks[0] : defaults;
+        writeForm(existing);
+        status('Current settings loaded.');
+      } catch (err) {
+        console.error(err);
+        status('Could not load current settings.');
+      } finally {
+        hb.hideSpinner && hb.hideSpinner();
+      }
+    }
+
+    async function saveConfig() {
+      const hb = getHomebridgeApi();
+      const config = readForm();
+      if (!config.clientId) {
+        status('Please enter your BMW CarData Client ID before saving.');
+        return;
+      }
+      if (config.vin && config.vin.length !== 17) {
+        status('VIN must be 17 characters, or left blank for auto-detect.');
+        return;
+      }
+      if (!hb || typeof hb.updatePluginConfig !== 'function') {
+        console.log('BMHome preview config:', config);
+        status('Preview mode: settings logged to the browser console.');
+        return;
+      }
+      try {
+        hb.showSpinner && hb.showSpinner();
+        await hb.updatePluginConfig([config]);
+        if (typeof hb.savePluginConfig === 'function') await hb.savePluginConfig();
+        hb.toast && hb.toast.success && hb.toast.success('BMHome settings saved.');
+        status('BMHome settings saved. Restart Homebridge if prompted.');
+      } catch (err) {
+        console.error(err);
+        hb.toast && hb.toast.error && hb.toast.error('Could not save BMHome settings.');
+        status('Could not save settings. Check the Homebridge logs for details.');
+      } finally {
+        hb.hideSpinner && hb.hideSpinner();
+      }
+    }
+
+    $('load').addEventListener('click', loadConfig);
+    $('save').addEventListener('click', saveConfig);
+    document.addEventListener('DOMContentLoaded', loadConfig);
+  </script>
+</body>
+</html>

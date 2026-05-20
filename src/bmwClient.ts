@@ -57,6 +57,7 @@ export class BMWClient {
       return true;
     } catch (err: any) {
       console.error(`[BMWClient] Initialization failed: ${err?.message || err}`);
+      this.logAxiosError(err, 'initialize');
       return false;
     }
   }
@@ -413,6 +414,25 @@ export class BMWClient {
     }
 
     return 'unknown';
+  }
+
+  private logAxiosError(err: any, context: string): void {
+    if (!err?.response) {
+      return;
+    }
+
+    const status = err.response.status;
+    const data = err.response.data;
+
+    console.error(`[BMWClient] BMW API error during ${context}: HTTP ${status}`);
+
+    if (data) {
+      try {
+        console.error(`[BMWClient] BMW API response: ${JSON.stringify(data)}`);
+      } catch {
+        console.error(`[BMWClient] BMW API response could not be stringified`);
+      }
+    }
   }
 
   private base64Url(buffer: Buffer): string {
