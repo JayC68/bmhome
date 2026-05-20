@@ -1,77 +1,152 @@
-import { AccessoryPlugin, API, Logging, Service, Characteristic } from 'homebridge';
+import { API, Logging, PlatformAccessory, Service } from 'homebridge';
 import { BMWClient } from './bmwClient';
-import { VehicleData } from './types';
 
 export class VehicleAccessory {
   private readonly log: Logging;
   private readonly api: API;
   private readonly client: BMWClient;
   private readonly vin: string;
+  private readonly pollingInterval: number;
+  private lockService!: Service;
+  private batteryService!: Service;
+  private heaterService!: Service;
 
-  private lockService: Service;
-  private batteryService: Service;
-  private heaterService: Service;
-
-  constructor(log: Logging, api: API, client: BMWClient, vin: string, name: string) {
+  constructor(
+    log: Logging,
+    api: API,
+    client: BMWClient,
+    vin: string,
+    name: string,
+    existingAccessory?: PlatformAccessory,
+  ) {
     this.log = log;
     this.api = api;
     this.client = client;
     this.vin = vin;
+    this.pollingInterval = (client.config?.pollingInterval ?? 180) * 1000;
 
-    const accessory = new api.platformAccessory(name, api.hap.uuid.generate(`bmhome-${vin}`));
+    let accessory: PlatformAccessory;
 
-    // Lock Service
-    this.lockService = accessory.addService(api.hap.Service.LockMechanism, `${name} Door Lock`, 'lock');
-    
-    // Battery Service
-    this.batteryService = accessory.addService(api.hap.Service.Battery, `${name} Battery`, 'battery');
+    if (existingAccessory) {
+      // Restore from Homebridge cache — do NOT register again
+      accessory = existingAccessory;
+      this.log.info(`Restoring accessory from cache: ${name}`);
+    } else {
+      // First run — create and register
+      accessory = new api.platformAccessory(name, api.hap.uuid.generate(`bmhome-${vin}`));
+      api.registerPlatformAccessories('homebridge-bmhome', 'BMWHome', [accessory]);
+      this.log.info(`Registered new accessory: ${name}`);
+    }
 
-    // Heater / Preconditioning
-    this.heaterService = accessory.addService(api.hap.Service.HeaterCooler, `${name} Preconditioning`, 'heat');
+    // Accessory Information
+    accessory.getService(api.hap.Service.AccessoryInformation)!
+      .setCharacteristic(api.hap.Characteristic.Manufacturer, 'BMW Group')
+      .setCharacteristic(api.hap.Characteristic.Model, 'BMW Vehicle')
+      .setCharacteristic(api.hap.Characteristic.SerialNumber, vin || 'unknown');
 
-    // Register the accessory
-    api.registerPlatformAccessories('homebridge-bmhome', 'BMWHome', [accessory]);
+    // Services — get existing or add
+    this.lockService = accessory.getService(api.hap.Service.LockMechanism)
+      ?? accessory.addService(api.hap.Service.LockMechanism, `${name} Door Lock`, 'lock');
+
+    this.batteryService = accessory.getService(api.hap.Service.Battery)
+      ?? accessory.addService(api.hap.Service.Battery, `${name} Battery`, 'battery');
+
+    this.heaterService = accessory.getService(api.hap.Service.HeaterCooler)
+      ?? accessory.addService(api.hap.Service.HeaterCooler, `${name} Preconditioning`, 'heat');
 
     this.setupHandlers();
+    this.fetchAndUpdate(); // immediate update on startup
     this.startPolling();
   }
 
   private setupHandlers() {
-    // Lock Target State
-    this.lockService.getCharacteristic(this.api.hap.Characteristic.LockTargetState)
+    const { Characteristic } = this.api.hap;
+
+    // ── Lock ──
+    this.lockService
+      .getCharacteristic(Characteristic.LockTargetState)
       .onSet(async (value) => {
         try {
-          const command = value === this.api.hap.Characteristic.LockTargetState.SECURED 
-            ? await this.client.lock(this.vin) 
+          const result = value === Characteristic.LockTargetState.SECURED
+            ? await this.client.lock(this.vin)
             : await this.client.unlock(this.vin);
-          
-          this.log.info(`Command result: ${command.message}`);
+          this.log.info(`Lock command result: ${result.message}`);
         } catch (err) {
-          this.log.error("Lock command failed", err);
+          this.log.error('Lock command failed', err);
+        }
+      });
+
+    // ── Preconditioning ──
+    this.heaterService
+      .getCharacteristic(Characteristic.Active)
+      .onSet(async (value) => {
+        try {
+          if (value === Characteristic.Active.ACTIVE) {
+            await this.client.precondition(this.vin, true);
+            this.log.info('Preconditioning started');
+          } else {
+            await this.client.precondition(this.vin, false);
+            this.log.info('Preconditioning stopped');
+          }
+        } catch (err) {
+          this.log.error('Preconditioning command failed', err);
         }
       });
   }
 
-  private async startPolling() {
-    setInterval(async () => {
+  private async fetchAndUpdate() {
+    try {
       const data = await this.client.getVehicleData(this.vin);
       if (data) this.updateCharacteristics(data);
-    }, 180000); // every 3 minutes
+    } catch (err) {
+      this.log.error('Initial vehicle data fetch failed', err);
+    }
   }
 
-  private updateCharacteristics(data: VehicleData) {
-    // Update Lock
-    const currentLock = data.lockStatus === 'locked' 
-      ? this.api.hap.Characteristic.LockCurrentState.SECURED 
-      : this.api.hap.Characteristic.LockCurrentState.UNSECURED;
+  private startPolling() {
+    setInterval(() => this.fetchAndUpdate(), this.pollingInterval);
+  }
 
-    this.lockService.updateCharacteristic(this.api.hap.Characteristic.LockCurrentState, currentLock);
+  private updateCharacteristics(data: any) {
+    const { Characteristic } = this.api.hap;
 
-    // Update Battery
+    // Lock state
+    const isLocked = data.lockStatus === 'locked';
+    this.lockService.updateCharacteristic(
+      Characteristic.LockCurrentState,
+      isLocked
+        ? Characteristic.LockCurrentState.SECURED
+        : Characteristic.LockCurrentState.UNSECURED,
+    );
+    this.lockService.updateCharacteristic(
+      Characteristic.LockTargetState,
+      isLocked
+        ? Characteristic.LockTargetState.SECURED
+        : Characteristic.LockTargetState.UNSECURED,
+    );
+
+    // Battery
     if (data.soc !== undefined) {
-      this.batteryService.updateCharacteristic(this.api.hap.Characteristic.BatteryLevel, data.soc);
+      this.batteryService.updateCharacteristic(Characteristic.BatteryLevel, data.soc);
+      this.batteryService.updateCharacteristic(
+        Characteristic.StatusLowBattery,
+        data.soc < 20
+          ? Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW
+          : Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL,
+      );
     }
 
-    this.log.debug(`Updated characteristics for ${data.vin}`);
+    // Charging state
+    if (data.chargingStatus !== undefined) {
+      const isCharging = data.chargingStatus === 'charging';
+      this.batteryService.updateCharacteristic(
+        Characteristic.ChargingState,
+        isCharging
+          ? Characteristic.ChargingState.CHARGING
+          : Characteristic.ChargingState.NOT_CHARGING,
+      );
+    }
+
+    this.log.debug(`Characteristics updated for VIN: ${data.vin ?? this.vin}`);
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "homebridge-bmhome",
-  "version": "0.1.0-beta.1",
-  "description": "BMW Home - Native HomeKit control for BMW vehicles (Lock, Preconditioning, Range & Battery)",
+  "version": "0.1.0-beta.3",
+  "description": "BMW Home - Native Apple Home control for BMW vehicles (Lock, Preconditioning, Range & Battery)",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -13,9 +13,10 @@
     "homebridge-plugin",
     "homebridge",
     "bmw",
+    "mybmw",
     "cardata",
     "homekit",
-    "mybmw"
+    "ev"
   ],
   "engines": {
     "homebridge": ">=1.8.0",
@@ -25,8 +26,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JayC68/bmhome"
+    "url": "git+https://github.com/JayC68/bmhome.git"
   },
+  "bugs": {
+    "url": "https://github.com/JayC68/bmhome/issues"
+  },
+  "homepage": "https://bmhome.kernowekconsulting.co.uk",
   "dependencies": {
     "axios": "^1.8.0",
     "joi": "^17.13.0",

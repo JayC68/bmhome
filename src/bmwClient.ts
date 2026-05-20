@@ -3,7 +3,7 @@ import * as mqtt from 'mqtt';
 import { BMHomePlatformConfig, VehicleData, CommandResponse } from './types';
 
 export class BMWClient {
-  private config: BMHomePlatformConfig;
+  public readonly config: BMHomePlatformConfig;
   private mqttClient?: mqtt.MqttClient;
   private token: string | null = null;
   private tokenExpiry: Date | null = null;
@@ -48,6 +48,14 @@ export class BMWClient {
   async precondition(vin: string, activate: boolean): Promise<CommandResponse> {
     console.log(`[BMWClient] ${activate ? 'Starting' : 'Stopping'} precondition for ${vin}`);
     return { success: true, message: `Preconditioning ${activate ? 'started' : 'stopped'}`, command: "precondition" };
+  }
+
+  async startPreconditioning(vin: string) {
+    return this.precondition(vin, true);
+  }
+
+  async stopPreconditioning(vin: string) {
+    return this.precondition(vin, false);
   }
 
   destroy() {
