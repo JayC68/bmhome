@@ -1,0 +1,38 @@
+{
+  "pluginAlias": "BMWHome",
+  "pluginType": "platform",
+  "singular": true,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "default": "BMW Home"
+      },
+      "clientId": {
+        "type": "string",
+        "title": "BMW CarData Client ID",
+        "description": "Get this from https://bmw-cardata.bmwgroup.com"
+      },
+      "vin": {
+        "type": "string",
+        "title": "VIN (optional)",
+        "description": "Leave empty to auto-detect",
+        "minLength": 17,
+        "maxLength": 17
+      },
+      "enableStreaming": {
+        "type": "boolean",
+        "default": true,
+        "title": "Enable MQTT Streaming"
+      },
+      "pollingInterval": {
+        "type": "integer",
+        "default": 180,
+        "minimum": 60,
+        "title": "Polling Interval (seconds)"
+      }
+    },
+    "required": ["clientId"]
+  }
+}
