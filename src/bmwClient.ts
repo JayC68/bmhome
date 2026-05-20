@@ -29,6 +29,9 @@ export class BMWClient {
   private tokenStore: TokenStore = {};
   private readonly tokenFile: string;
   private latestVehicleData: VehicleData | null = null;
+  private mqttConnected = false;
+  private lastMqttMessageAt?: Date;
+  private lastMqttTopic?: string;
 
   constructor(config: BMHomePlatformConfig) {
     this.config = config;
@@ -71,7 +74,12 @@ export class BMWClient {
       }
     }
 
-    console.warn('[BMWClient] No live BMW CarData payload received yet.');
+    if (this.mqttConnected) {
+      console.warn('[BMWClient] MQTT connected but no live BMW CarData payload received yet.');
+    } else {
+      console.warn('[BMWClient] MQTT not connected yet.');
+    }
+
     return null;
   }
 
@@ -218,7 +226,12 @@ export class BMWClient {
       return;
     }
 
-    const topic = `${this.tokenStore.gcid}/${this.config.vin || '+'}`;
+    const vinTopic = `${this.tokenStore.gcid}/${this.config.vin || '+'}`;
+    const wildcardTopic = `${this.tokenStore.gcid}/+`;
+
+    console.log(`[BMWClient] Preparing MQTT connection`);
+    console.log(`[BMWClient] VIN topic: ${vinTopic}`);
+    console.log(`[BMWClient] Wildcard topic: ${wildcardTopic}`);
 
     this.mqttClient = mqtt.connect(MQTT_URL, {
       username: this.tokenStore.gcid,
@@ -229,15 +242,33 @@ export class BMWClient {
     });
 
     this.mqttClient.on('connect', () => {
-      console.log(`[BMWClient] MQTT connected. Subscribing to ${topic}`);
-      this.mqttClient?.subscribe(topic, (err) => {
-        if (err) {
-          console.error(`[BMWClient] MQTT subscribe failed: ${err.message}`);
-        }
+      this.mqttConnected = true;
+
+      console.log('[BMWClient] MQTT connected');
+
+      const topics = [vinTopic, wildcardTopic];
+
+      topics.forEach((topic) => {
+        console.log(`[BMWClient] Subscribing to topic: ${topic}`);
+
+        this.mqttClient?.subscribe(topic, (err, granted) => {
+          if (err) {
+            console.error(`[BMWClient] MQTT subscribe failed for ${topic}: ${err.message}`);
+          } else {
+            console.log(`[BMWClient] MQTT subscribe success for ${topic}`);
+            console.log(`[BMWClient] MQTT granted: ${JSON.stringify(granted)}`);
+          }
+        });
       });
     });
 
     this.mqttClient.on('message', (receivedTopic, payload) => {
+      console.log(`[BMWClient] MQTT message received on topic: ${receivedTopic}`);
+      console.log(`[BMWClient] MQTT payload size: ${payload.length} bytes`);
+
+      this.lastMqttMessageAt = new Date();
+      this.lastMqttTopic = receivedTopic;
+
       this.handleMqttMessage(receivedTopic, payload);
     });
 
@@ -246,7 +277,16 @@ export class BMWClient {
     });
 
     this.mqttClient.on('close', () => {
+      this.mqttConnected = false;
       console.warn('[BMWClient] MQTT connection closed');
+    });
+
+    this.mqttClient.on('reconnect', () => {
+      console.warn('[BMWClient] MQTT reconnecting...');
+    });
+
+    this.mqttClient.on('offline', () => {
+      console.warn('[BMWClient] MQTT offline');
     });
   }
 
@@ -269,7 +309,16 @@ export class BMWClient {
       };
 
       this.latestVehicleData = data;
+
       console.log(`[BMWClient] MQTT vehicle update received for ${vin}`);
+
+      console.log(
+        `[BMWClient] Parsed vehicle state: ` +
+        `SOC=${data.soc ?? 'unknown'} ` +
+        `Range=${data.remainingRange ?? 'unknown'} ` +
+        `Charging=${data.isCharging ?? 'unknown'} ` +
+        `Lock=${data.lockStatus ?? 'unknown'}`
+      );
     } catch (err: any) {
       console.error(`[BMWClient] Failed to parse MQTT payload: ${err?.message || err}`);
     }
