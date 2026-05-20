@@ -1,5 +1,6 @@
 import { API, Logging, PlatformAccessory, Service } from 'homebridge';
 import { BMWClient } from './bmwClient';
+import { VehicleData } from './types';
 
 export class VehicleAccessory {
   private readonly log: Logging;
@@ -28,104 +29,99 @@ export class VehicleAccessory {
     let accessory: PlatformAccessory;
 
     if (existingAccessory) {
-      // Restore from Homebridge cache — do NOT register again
       accessory = existingAccessory;
       this.log.info(`Restoring accessory from cache: ${name}`);
     } else {
-      // First run — create and register
-      accessory = new api.platformAccessory(name, api.hap.uuid.generate(`bmhome-${vin}`));
+      accessory = new api.platformAccessory(name, api.hap.uuid.generate(`bmhome-${vin || 'auto'}`));
       api.registerPlatformAccessories('homebridge-bmhome', 'BMWHome', [accessory]);
       this.log.info(`Registered new accessory: ${name}`);
     }
 
-    // Accessory Information
     accessory.getService(api.hap.Service.AccessoryInformation)!
       .setCharacteristic(api.hap.Characteristic.Manufacturer, 'BMW Group')
       .setCharacteristic(api.hap.Characteristic.Model, 'BMW Vehicle')
-      .setCharacteristic(api.hap.Characteristic.SerialNumber, vin || 'unknown');
+      .setCharacteristic(api.hap.Characteristic.SerialNumber, vin || 'auto');
 
-    // Services — get existing or add
-    this.lockService = accessory.getService(api.hap.Service.LockMechanism)
-      ?? accessory.addService(api.hap.Service.LockMechanism, `${name} Door Lock`, 'lock');
+    this.lockService =
+      accessory.getService(api.hap.Service.LockMechanism) ??
+      accessory.addService(api.hap.Service.LockMechanism, `${name} Door Lock`, 'lock');
 
-    this.batteryService = accessory.getService(api.hap.Service.Battery)
-      ?? accessory.addService(api.hap.Service.Battery, `${name} Battery`, 'battery');
+    this.batteryService =
+      accessory.getService(api.hap.Service.Battery) ??
+      accessory.addService(api.hap.Service.Battery, `${name} Battery`, 'battery');
 
-    this.heaterService = accessory.getService(api.hap.Service.HeaterCooler)
-      ?? accessory.addService(api.hap.Service.HeaterCooler, `${name} Preconditioning`, 'heat');
+    this.heaterService =
+      accessory.getService(api.hap.Service.HeaterCooler) ??
+      accessory.addService(api.hap.Service.HeaterCooler, `${name} Preconditioning`, 'heat');
 
     this.setupHandlers();
-    this.fetchAndUpdate(); // immediate update on startup
+    this.fetchAndUpdate();
     this.startPolling();
   }
 
-  private setupHandlers() {
+  private setupHandlers(): void {
     const { Characteristic } = this.api.hap;
 
-    // ── Lock ──
     this.lockService
       .getCharacteristic(Characteristic.LockTargetState)
       .onSet(async (value) => {
-        try {
-          const result = value === Characteristic.LockTargetState.SECURED
-            ? await this.client.lock(this.vin)
-            : await this.client.unlock(this.vin);
-          this.log.info(`Lock command result: ${result.message}`);
-        } catch (err) {
-          this.log.error('Lock command failed', err);
+        const result = value === Characteristic.LockTargetState.SECURED
+          ? await this.client.lock(this.vin)
+          : await this.client.unlock(this.vin);
+
+        this.log.warn(result.message);
+
+        const current = this.lockService.getCharacteristic(Characteristic.LockCurrentState).value;
+        if (current !== null && current !== undefined) {
+          this.lockService.updateCharacteristic(Characteristic.LockTargetState, current);
         }
       });
 
-    // ── Preconditioning ──
     this.heaterService
       .getCharacteristic(Characteristic.Active)
       .onSet(async (value) => {
-        try {
-          if (value === Characteristic.Active.ACTIVE) {
-            await this.client.precondition(this.vin, true);
-            this.log.info('Preconditioning started');
-          } else {
-            await this.client.precondition(this.vin, false);
-            this.log.info('Preconditioning stopped');
-          }
-        } catch (err) {
-          this.log.error('Preconditioning command failed', err);
-        }
+        const result = await this.client.precondition(
+          this.vin,
+          value === Characteristic.Active.ACTIVE,
+        );
+
+        this.log.warn(result.message);
+        this.heaterService.updateCharacteristic(Characteristic.Active, Characteristic.Active.INACTIVE);
       });
   }
 
-  private async fetchAndUpdate() {
+  private async fetchAndUpdate(): Promise<void> {
     try {
       const data = await this.client.getVehicleData(this.vin);
-      if (data) this.updateCharacteristics(data);
+      if (data) {
+        this.updateCharacteristics(data);
+      }
     } catch (err) {
-      this.log.error('Initial vehicle data fetch failed', err);
+      this.log.error('Vehicle data fetch failed', err);
     }
   }
 
-  private startPolling() {
+  private startPolling(): void {
     setInterval(() => this.fetchAndUpdate(), this.pollingInterval);
   }
 
-  private updateCharacteristics(data: any) {
+  private updateCharacteristics(data: VehicleData): void {
     const { Characteristic } = this.api.hap;
 
-    // Lock state
-    const isLocked = data.lockStatus === 'locked';
-    this.lockService.updateCharacteristic(
-      Characteristic.LockCurrentState,
-      isLocked
-        ? Characteristic.LockCurrentState.SECURED
-        : Characteristic.LockCurrentState.UNSECURED,
-    );
-    this.lockService.updateCharacteristic(
-      Characteristic.LockTargetState,
-      isLocked
-        ? Characteristic.LockTargetState.SECURED
-        : Characteristic.LockTargetState.UNSECURED,
-    );
+    if (data.lockStatus && data.lockStatus !== 'unknown') {
+      const isLocked = data.lockStatus === 'locked';
 
-    // Battery
+      this.lockService.updateCharacteristic(
+        Characteristic.LockCurrentState,
+        isLocked ? Characteristic.LockCurrentState.SECURED : Characteristic.LockCurrentState.UNSECURED,
+      );
+
+      this.lockService.updateCharacteristic(
+        Characteristic.LockTargetState,
+        isLocked ? Characteristic.LockTargetState.SECURED : Characteristic.LockTargetState.UNSECURED,
+      );
+    }
+
     if (data.soc !== undefined) {
       this.batteryService.updateCharacteristic(Characteristic.BatteryLevel, data.soc);
       this.batteryService.updateCharacteristic(
@@ -136,14 +132,22 @@ export class VehicleAccessory {
       );
     }
 
-    // Charging state
-    if (data.chargingStatus !== undefined) {
-      const isCharging = data.chargingStatus === 'charging';
+    if (data.isCharging !== undefined || data.chargingStatus !== undefined) {
+      const status = String(data.chargingStatus || '').toLowerCase();
+      const isCharging = data.isCharging === true || status.includes('charging');
+
       this.batteryService.updateCharacteristic(
         Characteristic.ChargingState,
         isCharging
           ? Characteristic.ChargingState.CHARGING
           : Characteristic.ChargingState.NOT_CHARGING,
+      );
+    }
+
+    if (data.preconditionActive !== undefined) {
+      this.heaterService.updateCharacteristic(
+        Characteristic.Active,
+        data.preconditionActive ? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE,
       );
     }
 

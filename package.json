@@ -1,6 +1,6 @@
 {
   "name": "homebridge-bmhome",
-  "version": "0.1.0-beta.5",
+  "version": "0.1.0-beta.6",
   "description": "BM Home - Native Apple Home / HomeKit control for BMW vehicles using BMW CarData",
   "main": "dist/index.js",
   "scripts": {
@@ -12,17 +12,17 @@
   "keywords": [
     "homebridge-plugin",
     "homebridge",
+    "bmhome",
+    "bm-home",
+    "bm home",
     "bmw",
     "mybmw",
     "cardata",
     "homekit",
-    "ev",
-    "bmhome",
-    "bm-home",
-    "bm home",
     "apple-home",
     "vehicle",
-    "car"
+    "car",
+    "ev"
   ],
   "engines": {
     "homebridge": ">=1.8.0",

@@ -18,12 +18,13 @@ export class BMWHomePlatform implements DynamicPlatformPlugin {
 
     try {
       this.config = validateConfig(config);
+      this.config.storagePath = this.api.user.storagePath();
       this.configValid = true;
-      this.log.info(`BMW Home Platform loaded - Name: ${this.config.name}`);
+      this.log.info(`BM Home Platform loaded - Name: ${this.config.name}`);
     } catch (err: any) {
-      this.log.error(`BMWHome config error: ${err.message}`);
+      this.log.error(`BMHome config error: ${err.message}`);
       this.log.error('Plugin will not initialise until the config is corrected in the Homebridge UI.');
-      return; // never throw from a Homebridge constructor
+      return;
     }
 
     this.client = new BMWClient(this.config);
@@ -33,23 +34,25 @@ export class BMWHomePlatform implements DynamicPlatformPlugin {
     });
   }
 
-  async onDidFinishLaunching() {
+  async onDidFinishLaunching(): Promise<void> {
     if (!this.configValid) {
       this.log.error('Skipping launch — invalid config.');
       return;
     }
 
-    this.log.info('🚗 BMW Home didFinishLaunching');
+    this.log.info('BM Home didFinishLaunching');
 
     const success = await this.client.initialize();
+
     if (!success) {
-      this.log.error('Failed to initialize BMW Client — check your Client ID.');
+      this.log.error('Failed to initialize BMW Client. Check Client ID and BMW authorisation logs.');
       return;
     }
 
-    const vehicleName = this.config.name || 'BMW Home';
+    const vehicleName = this.config.name || 'BM Home';
     const vin = this.config.vin || '';
-    const uuid = this.api.hap.uuid.generate(`bmhome-${vin}`);
+    const uuid = this.api.hap.uuid.generate(`bmhome-${vin || 'auto'}`);
+
     const existingAccessory = this.accessories.find(a => a.UUID === uuid);
 
     if (existingAccessory) {
@@ -61,7 +64,7 @@ export class BMWHomePlatform implements DynamicPlatformPlugin {
     }
   }
 
-  configureAccessory(accessory: PlatformAccessory) {
+  configureAccessory(accessory: PlatformAccessory): void {
     this.log.info(`Loading cached accessory: ${accessory.displayName}`);
     this.accessories.push(accessory);
   }

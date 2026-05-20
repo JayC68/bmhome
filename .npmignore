@@ -1,0 +1,11 @@
+src/
+scripts/
+*.sh
+*.bak.*
+*.tgz
+bmhome-homebridge-ui/
+.DS_Store
+.git/
+.github/
+node_modules/
+tsconfig.json

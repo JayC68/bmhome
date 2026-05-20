@@ -1,23 +1,27 @@
 export interface BMHomePlatformConfig {
-  name?: string;
-  clientId: string;           // required
+  platform?: string;
+  name: string;
+  clientId: string;
   vin?: string;
-  enableStreaming?: boolean;
-  pollingInterval?: number;
+  enableStreaming: boolean;
+  pollingInterval: number;
+  storagePath?: string;
 }
 
 export interface VehicleData {
   vin: string;
-  soc?: number;                    // State of Charge %
-  remainingRange?: number;         // km
+  soc?: number;
+  remainingRange?: number;
   isCharging?: boolean;
-  lockStatus?: 'locked' | 'unlocked';
+  chargingStatus?: string;
+  lockStatus?: 'locked' | 'unlocked' | 'unknown';
   preconditionActive?: boolean;
+  raw?: unknown;
   timestamp: Date;
 }
 
 export interface CommandResponse {
   success: boolean;
   message: string;
-  command?: string;
+  command: string;
 }
