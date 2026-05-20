@@ -1,7 +1,7 @@
 {
   "name": "homebridge-bmhome",
-  "version": "0.1.0-beta.3",
-  "description": "BMW Home - Native Apple Home control for BMW vehicles (Lock, Preconditioning, Range & Battery)",
+  "version": "0.1.0-beta.4",
+  "description": "BM Home - Native Apple Home / HomeKit control for BMW vehicles using BMW CarData",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -16,7 +16,13 @@
     "mybmw",
     "cardata",
     "homekit",
-    "ev"
+    "ev",
+    "bmhome",
+    "bm-home",
+    "bm home",
+    "apple-home",
+    "vehicle",
+    "car"
   ],
   "engines": {
     "homebridge": ">=1.8.0",
@@ -42,5 +48,6 @@
     "@types/node": "^22.0.0",
     "homebridge": "^1.8.0",
     "typescript": "^5.8.0"
-  }
+  },
+  "displayName": "BM Home"
 }

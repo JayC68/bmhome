@@ -7,7 +7,7 @@
     "properties": {
       "name": {
         "type": "string",
-        "default": "BMW Home"
+        "default": "BM Home"
       },
       "clientId": {
         "type": "string",
@@ -33,6 +33,8 @@
         "title": "Polling Interval (seconds)"
       }
     },
-    "required": ["clientId"]
+    "required": [
+      "clientId"
+    ]
   }
 }

@@ -29,7 +29,7 @@ Control your BMW directly from Apple Home:
 ```json
 {
   "platform": "BMWHome",
-  "name": "BMW Home",
+  "name": "BM Home",
   "clientId": "your-client-id-here",
   "vin": "WBA00000000000000",
   "enableStreaming": true
