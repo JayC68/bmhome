@@ -226,12 +226,12 @@ export class BMWClient {
       return;
     }
 
-    const vinTopic = `${this.tokenStore.gcid}/${this.config.vin || '+'}`;
-    const wildcardTopic = `${this.tokenStore.gcid}/+`;
+    const vinTopic = this.config.vin || '+';
+    const wildcardTopic = '+';
 
     console.log(`[BMWClient] Preparing MQTT connection`);
-    console.log(`[BMWClient] VIN topic: ${vinTopic}`);
-    console.log(`[BMWClient] Wildcard topic: ${wildcardTopic}`);
+    console.log(`[BMWClient] VIN topic (BMW portal topic): ${vinTopic}`);
+    console.log(`[BMWClient] Wildcard diagnostic topic: ${wildcardTopic}`);
 
     this.mqttClient = mqtt.connect(MQTT_URL, {
       username: this.tokenStore.gcid,
@@ -249,7 +249,7 @@ export class BMWClient {
       const topics = [vinTopic, wildcardTopic];
 
       topics.forEach((topic) => {
-        console.log(`[BMWClient] Subscribing to topic: ${topic}`);
+        console.log(`[BMWClient] Subscribing to BMW portal topic: ${topic}`);
 
         this.mqttClient?.subscribe(topic, (err, granted) => {
           if (err) {
@@ -263,8 +263,18 @@ export class BMWClient {
     });
 
     this.mqttClient.on('message', (receivedTopic, payload) => {
+      console.log('[BMWClient] MQTT RAW PAYLOAD START');
       console.log(`[BMWClient] MQTT message received on topic: ${receivedTopic}`);
       console.log(`[BMWClient] MQTT payload size: ${payload.length} bytes`);
+      try {
+        const raw = payload.toString();
+        console.log(`[BMWClient] MQTT payload preview: ${raw.slice(0, 4000)}`);
+        const parsed = JSON.parse(raw);
+        console.log(`[BMWClient] MQTT parsed top-level keys: ${Object.keys(parsed).join(', ')}`);
+      } catch (err: any) {
+        console.error(`[BMWClient] MQTT payload parse diagnostic failed: ${err?.message || err}`);
+      }
+      console.log('[BMWClient] MQTT RAW PAYLOAD END');
 
       this.lastMqttMessageAt = new Date();
       this.lastMqttTopic = receivedTopic;
