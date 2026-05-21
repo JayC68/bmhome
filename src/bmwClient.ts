@@ -227,11 +227,9 @@ export class BMWClient {
     }
 
     const vinTopic = this.config.vin || '+';
-    const wildcardTopic = '+';
 
     console.log(`[BMWClient] Preparing MQTT connection`);
     console.log(`[BMWClient] VIN topic (BMW portal topic): ${vinTopic}`);
-    console.log(`[BMWClient] Wildcard diagnostic topic: ${wildcardTopic}`);
 
     this.mqttClient = mqtt.connect(MQTT_URL, {
       username: this.tokenStore.gcid,
@@ -246,7 +244,7 @@ export class BMWClient {
 
       console.log('[BMWClient] MQTT connected');
 
-      const topics = [vinTopic, wildcardTopic];
+      const topics = [vinTopic];
 
       topics.forEach((topic) => {
         console.log(`[BMWClient] Subscribing to BMW portal topic: ${topic}`);
