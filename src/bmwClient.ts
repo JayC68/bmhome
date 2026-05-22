@@ -23,6 +23,25 @@ const TOKEN_URL = 'https://customer.bmwgroup.com/gcdm/oauth/token';
 const MQTT_URL = 'mqtts://customer.streaming-cardata.bmwgroup.com:9000';
 const SCOPE = 'authenticate_user openid cardata:streaming:read cardata:api:read';
 
+function decodeJwtPayload(token?: string): any {
+  try {
+    if (!token) {
+      return null;
+    }
+
+    const part = token.split('.')[1];
+    if (!part) {
+      return null;
+    }
+
+    const normalized = part.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalized.padEnd(normalized.length + ((4 - normalized.length % 4) % 4), '=');
+    return JSON.parse(Buffer.from(padded, 'base64').toString('utf8'));
+  } catch {
+    return null;
+  }
+}
+
 export class BMWClient {
   public readonly config: BMHomePlatformConfig;
   private mqttClient?: mqtt.MqttClient;
@@ -226,15 +245,26 @@ export class BMWClient {
       return;
     }
 
-    const vinTopic = this.config.vin || '+';
+    const vinTopic = `${this.tokenStore.gcid}/${this.config.vin || '+'}`;
 
     console.log(`[BMWClient] Preparing MQTT connection`);
-    console.log(`[BMWClient] VIN topic (BMW portal topic): ${vinTopic}`);
-    console.log(`[BMWClient] MQTT password source: ${this.tokenStore.accessToken ? 'accessToken' : 'idToken fallback'}`);
+    console.log(`[BMWClient] MQTT subscribe topic (BMW docs username/topic): ${vinTopic}`);
+    console.log('[BMWClient] MQTT password source: idToken');
+
+    const idTokenPayload = decodeJwtPayload(this.tokenStore.idToken);
+    if (idTokenPayload) {
+      console.log('[BMWClient] BMW ID token decoded diagnostics:');
+      console.log(`[BMWClient] token aud: ${JSON.stringify(idTokenPayload.aud || null)}`);
+      console.log(`[BMWClient] token scope: ${JSON.stringify(idTokenPayload.scope || idTokenPayload.scopes || null)}`);
+      console.log(`[BMWClient] token dynamic scopes: ${JSON.stringify(idTokenPayload.dynamic_scopes || idTokenPayload.dynamicScopes || idTokenPayload.dyn_scopes || null)}`);
+      console.log(`[BMWClient] token exp: ${JSON.stringify(idTokenPayload.exp || null)}`);
+    } else {
+      console.log('[BMWClient] BMW ID token could not be decoded for diagnostics');
+    }
 
     this.mqttClient = mqtt.connect(MQTT_URL, {
       username: this.tokenStore.gcid,
-      password: this.tokenStore.accessToken || this.tokenStore.idToken,
+      password: this.tokenStore.idToken,
       keepalive: 30,
       reconnectPeriod: 30000,
       clean: true,
@@ -248,7 +278,7 @@ export class BMWClient {
       const topics = [vinTopic];
 
       topics.forEach((topic) => {
-        console.log(`[BMWClient] Subscribing to BMW portal topic: ${topic}`);
+        console.log(`[BMWClient] Subscribing to BMW documented topic: ${topic}`);
 
         this.mqttClient?.subscribe(topic, (err, granted) => {
           if (err) {
