@@ -70,11 +70,6 @@ export class VehicleAccessory {
           : await this.client.unlock(this.vin);
 
         this.log.warn(result.message);
-
-        const current = this.lockService.getCharacteristic(Characteristic.LockCurrentState).value;
-        if (current !== null && current !== undefined) {
-          this.lockService.updateCharacteristic(Characteristic.LockTargetState, current);
-        }
       });
 
     this.heaterService
@@ -86,8 +81,7 @@ export class VehicleAccessory {
         );
 
         this.log.warn(result.message);
-        this.heaterService.updateCharacteristic(Characteristic.Active, Characteristic.Active.INACTIVE);
-      });
+        });
   }
 
   private async fetchAndUpdate(): Promise<void> {

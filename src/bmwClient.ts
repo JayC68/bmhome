@@ -230,10 +230,11 @@ export class BMWClient {
 
     console.log(`[BMWClient] Preparing MQTT connection`);
     console.log(`[BMWClient] VIN topic (BMW portal topic): ${vinTopic}`);
+    console.log(`[BMWClient] MQTT password source: ${this.tokenStore.accessToken ? 'accessToken' : 'idToken fallback'}`);
 
     this.mqttClient = mqtt.connect(MQTT_URL, {
       username: this.tokenStore.gcid,
-      password: this.tokenStore.idToken,
+      password: this.tokenStore.accessToken || this.tokenStore.idToken,
       keepalive: 30,
       reconnectPeriod: 30000,
       clean: true,
