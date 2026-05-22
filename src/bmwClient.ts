@@ -44,6 +44,10 @@ function decodeJwtPayload(token?: string): any {
 
 export class BMWClient {
   private descriptorState: Record<string, any> = {};
+  private lastMqttAuthErrorLogAt = 0;
+  private lastMqttCloseLogAt = 0;
+  private lastParsedSummary = '';
+
 
   public readonly config: BMHomePlatformConfig;
   private mqttClient?: mqtt.MqttClient;
@@ -294,41 +298,56 @@ export class BMWClient {
     });
 
     this.mqttClient.on('message', (receivedTopic, payload) => {
-      console.log('[BMWClient] MQTT RAW PAYLOAD START');
-      console.log(`[BMWClient] MQTT message received on topic: ${receivedTopic}`);
-      console.log(`[BMWClient] MQTT payload size: ${payload.length} bytes`);
-      try {
-        const raw = payload.toString();
-        console.log(`[BMWClient] MQTT payload preview: ${raw.slice(0, 4000)}`);
-        const parsed = JSON.parse(raw);
-        console.log(`[BMWClient] MQTT parsed top-level keys: ${Object.keys(parsed).join(', ')}`);
-      } catch (err: any) {
-        console.error(`[BMWClient] MQTT payload parse diagnostic failed: ${err?.message || err}`);
-      }
-      console.log('[BMWClient] MQTT RAW PAYLOAD END');
-
       this.lastMqttMessageAt = new Date();
       this.lastMqttTopic = receivedTopic;
-
       this.handleMqttMessage(receivedTopic, payload);
     });
 
     this.mqttClient.on('error', (err) => {
-      console.error(`[BMWClient] MQTT error: ${err.message}`);
+      const message = err?.message || String(err);
+
+      if (/Bad username or password/i.test(message)) {
+        if (this.shouldLogEvery('auth', 10 * 60 * 1000)) {
+          console.error('[BMWClient] MQTT authentication failed. Token may be expired; BMHome will retry quietly.');
+        }
+        return;
+      }
+
+      console.error(`[BMWClient] MQTT error: ${message}`);
     });
 
     this.mqttClient.on('close', () => {
       this.mqttConnected = false;
-      console.warn('[BMWClient] MQTT connection closed');
+      if (this.shouldLogEvery('close', 10 * 60 * 1000)) {
+        console.warn('[BMWClient] MQTT connection closed; reconnecting quietly.');
+      }
     });
 
     this.mqttClient.on('reconnect', () => {
-      console.warn('[BMWClient] MQTT reconnecting...');
+      // Suppressed by default to avoid Homebridge log noise.
     });
 
     this.mqttClient.on('offline', () => {
-      console.warn('[BMWClient] MQTT offline');
+      // Suppressed by default to avoid Homebridge log noise.
     });
+  }
+
+  private shouldLogEvery(key: 'auth' | 'close', intervalMs: number): boolean {
+    const now = Date.now();
+
+    if (key === 'auth') {
+      if (now - this.lastMqttAuthErrorLogAt < intervalMs) {
+        return false;
+      }
+      this.lastMqttAuthErrorLogAt = now;
+      return true;
+    }
+
+    if (now - this.lastMqttCloseLogAt < intervalMs) {
+      return false;
+    }
+    this.lastMqttCloseLogAt = now;
+    return true;
   }
 
   private handleMqttMessage(topic: string, payload: Buffer): void {
@@ -430,16 +449,19 @@ export class BMWClient {
       this.latestVehicleData = data;
 
       console.log(`[BMWClient] MQTT vehicle update received for ${vin}`);
-      console.log(
-        `[BMWClient] Parsed vehicle state: ` +
+      const summary =
         `SOC=${data.soc ?? 'unknown'} ` +
         `Range=${data.remainingRange ?? 'unknown'} ` +
         `Charging=${data.isCharging ?? 'unknown'} ` +
         `Lock=${data.lockStatus ?? 'unknown'} ` +
         `DoorsOpen=${data.doorsOpen ?? 'unknown'} ` +
         `WindowsOpen=${data.windowsOpen ?? 'unknown'} ` +
-        `Tyres=${tyrePressures.length}/4`
-      );
+        `Tyres=${tyrePressures.length}/4`;
+
+      if (summary !== this.lastParsedSummary) {
+        this.lastParsedSummary = summary;
+        console.log(`[BMWClient] Parsed vehicle state: ${summary}`);
+      }
     } catch (err: any) {
       console.error(`[BMWClient] Failed to parse MQTT payload: ${err?.message || err}`);
     }
