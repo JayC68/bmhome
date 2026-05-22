@@ -43,6 +43,8 @@ function decodeJwtPayload(token?: string): any {
 }
 
 export class BMWClient {
+  private descriptorState: Record<string, any> = {};
+
   public readonly config: BMHomePlatformConfig;
   private mqttClient?: mqtt.MqttClient;
   private tokenStore: TokenStore = {};
@@ -335,28 +337,108 @@ export class BMWClient {
       const json = JSON.parse(text);
       const vin = this.extractVin(topic, json);
 
-      const data: VehicleData = {
+      if (json?.data && typeof json.data === 'object') {
+        Object.assign(this.descriptorState, json.data);
+      }
+
+      const value = (path: string): any => {
+        const entry = this.descriptorState[path];
+        return entry && typeof entry === 'object' ? entry.value : undefined;
+      };
+
+      const anyTrue = (paths: string[]): boolean | undefined => {
+        let seen = false;
+        for (const path of paths) {
+          const v = value(path);
+          if (v === undefined) continue;
+          seen = true;
+          if (v === true || v === 'OPEN' || v === 'OPENED') return true;
+        }
+        return seen ? false : undefined;
+      };
+
+      const anyNotClosed = (paths: string[]): boolean | undefined => {
+        let seen = false;
+        for (const path of paths) {
+          const v = value(path);
+          if (v === undefined) continue;
+          seen = true;
+          if (v !== false && v !== 'CLOSED' && v !== 'CLOSE') return true;
+        }
+        return seen ? false : undefined;
+      };
+
+      const soc =
+        value('vehicle.drivetrain.highVoltageBattery.stateOfCharge') ??
+        value('vehicle.drivetrain.highVoltageBattery.soc');
+
+      const remainingRange =
+        value('vehicle.drivetrain.electricEngine.kombiRemainingElectricRange') ??
+        value('vehicle.drivetrain.lastRemainingRange');
+
+      const lockRaw =
+        value('vehicle.security.centralLock.status') ??
+        value('vehicle.vehicle.lock.status');
+
+      const locked =
+        lockRaw === 'LOCKED' || lockRaw === 'SECURED' || lockRaw === true
+          ? true
+          : lockRaw === 'UNLOCKED' || lockRaw === false
+            ? false
+            : undefined;
+
+      const doorsOpen = anyTrue([
+        'vehicle.cabin.door.row1.driver.isOpen',
+        'vehicle.cabin.door.row1.passenger.isOpen',
+        'vehicle.cabin.door.row2.driver.isOpen',
+        'vehicle.cabin.door.row2.passenger.isOpen',
+        'vehicle.body.trunk.door.isOpen',
+        'vehicle.body.tailgate.isOpen'
+      ]);
+
+      const windowsOpen = anyNotClosed([
+        'vehicle.cabin.window.row1.driver.status',
+        'vehicle.cabin.window.row1.passenger.status',
+        'vehicle.cabin.window.row2.driver.status',
+        'vehicle.cabin.window.row2.passenger.status',
+        'vehicle.cabin.sunroof.status'
+      ]);
+
+      const tyrePressures = [
+        value('vehicle.chassis.axle.row1.wheel.left.tire.pressure'),
+        value('vehicle.chassis.axle.row1.wheel.right.tire.pressure'),
+        value('vehicle.chassis.axle.row2.wheel.left.tire.pressure'),
+        value('vehicle.chassis.axle.row2.wheel.right.tire.pressure')
+      ].filter((v) => typeof v === 'number');
+
+      const data: any = {
         vin,
-        soc: this.findNumber(json, ['soc', 'stateOfCharge', 'chargingLevelHv', 'batteryLevel']),
-        remainingRange: this.findNumber(json, ['remainingRange', 'range', 'electricRange', 'rangeElectric']),
-        isCharging: this.findBoolean(json, ['isCharging', 'chargingActive']),
-        chargingStatus: this.findString(json, ['chargingStatus', 'chargingState']),
-        lockStatus: this.normaliseLockStatus(this.findString(json, ['lockStatus', 'doorLockState', 'centralLockState'])),
-        preconditionActive: this.findBoolean(json, ['preconditionActive', 'climateActive', 'preconditioningActive']),
+        soc: typeof soc === 'number' ? soc : undefined,
+        remainingRange: typeof remainingRange === 'number' ? remainingRange : undefined,
+        isCharging: undefined,
+        chargingStatus: undefined,
+        lockStatus: locked === true ? 'LOCKED' : locked === false ? 'UNLOCKED' : undefined,
+        locked,
+        doorsOpen,
+        windowsOpen,
+        tyrePressures,
         raw: json,
+        rawDescriptors: this.descriptorState,
         timestamp: new Date(),
       };
 
       this.latestVehicleData = data;
 
       console.log(`[BMWClient] MQTT vehicle update received for ${vin}`);
-
       console.log(
         `[BMWClient] Parsed vehicle state: ` +
         `SOC=${data.soc ?? 'unknown'} ` +
         `Range=${data.remainingRange ?? 'unknown'} ` +
         `Charging=${data.isCharging ?? 'unknown'} ` +
-        `Lock=${data.lockStatus ?? 'unknown'}`
+        `Lock=${data.lockStatus ?? 'unknown'} ` +
+        `DoorsOpen=${data.doorsOpen ?? 'unknown'} ` +
+        `WindowsOpen=${data.windowsOpen ?? 'unknown'} ` +
+        `Tyres=${tyrePressures.length}/4`
       );
     } catch (err: any) {
       console.error(`[BMWClient] Failed to parse MQTT payload: ${err?.message || err}`);
