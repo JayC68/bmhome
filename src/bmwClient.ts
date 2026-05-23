@@ -332,6 +332,11 @@ export class BMWClient {
     });
   }
 
+  private detectVehicleBrand(vin?: string): 'BMW' | 'MINI' {
+    const wmi = (vin || '').slice(0, 3).toUpperCase();
+    return wmi === 'WMW' ? 'MINI' : 'BMW';
+  }
+
   private shouldLogEvery(key: 'auth' | 'close', intervalMs: number): boolean {
     const now = Date.now();
 
@@ -395,6 +400,9 @@ export class BMWClient {
         value('vehicle.drivetrain.electricEngine.kombiRemainingElectricRange') ??
         value('vehicle.drivetrain.lastRemainingRange');
 
+      const remainingFuel =
+        value('vehicle.drivetrain.fuelSystem.remainingFuel');
+
       const distanceUnit = this.config.distanceUnit === 'km' ? 'km' : 'mi';
       const remainingRangeKm = typeof remainingRange === 'number' ? remainingRange : undefined;
       const remainingRangeMiles = typeof remainingRangeKm === 'number'
@@ -444,6 +452,8 @@ export class BMWClient {
         remainingRangeKm,
         remainingRangeMiles,
         distanceUnit,
+        remainingFuel: typeof remainingFuel === 'number' ? remainingFuel : undefined,
+        vehicleBrand: this.detectVehicleBrand(vin),
         isCharging: undefined,
         chargingStatus: undefined,
         lockStatus: locked === true ? 'LOCKED' : locked === false ? 'UNLOCKED' : undefined,
@@ -465,7 +475,9 @@ export class BMWClient {
         `Lock=${data.lockStatus ?? 'unknown'} ` +
         `DoorsOpen=${data.doorsOpen ?? 'unknown'} ` +
         `WindowsOpen=${data.windowsOpen ?? 'unknown'} ` +
-        `Tyres=${tyrePressures.length}/4`;
+        `Tyres=${tyrePressures.length}/4 ` +
+        `Brand=${data.vehicleBrand}` +
+        `${data.remainingFuel !== undefined ? ` Fuel=${data.remainingFuel}` : ''}`;
 
       if (summary !== this.lastParsedSummary) {
         this.lastParsedSummary = summary;
