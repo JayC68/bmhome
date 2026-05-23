@@ -458,7 +458,6 @@ export class BMWClient {
 
       this.latestVehicleData = data;
 
-      console.log(`[BMWClient] MQTT vehicle update received for ${vin}`);
       const summary =
         `SOC=${data.soc ?? 'unknown'} ` +
         `Range=${data.remainingRange ?? 'unknown'}${data.remainingRange !== undefined ? data.distanceUnit : ''} ` +
