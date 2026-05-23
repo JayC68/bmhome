@@ -395,6 +395,13 @@ export class BMWClient {
         value('vehicle.drivetrain.electricEngine.kombiRemainingElectricRange') ??
         value('vehicle.drivetrain.lastRemainingRange');
 
+      const distanceUnit = this.config.distanceUnit === 'km' ? 'km' : 'mi';
+      const remainingRangeKm = typeof remainingRange === 'number' ? remainingRange : undefined;
+      const remainingRangeMiles = typeof remainingRangeKm === 'number'
+        ? Math.round(remainingRangeKm * 0.621371)
+        : undefined;
+      const userRemainingRange = distanceUnit === 'km' ? remainingRangeKm : remainingRangeMiles;
+
       const lockRaw =
         value('vehicle.security.centralLock.status') ??
         value('vehicle.vehicle.lock.status');
@@ -433,7 +440,10 @@ export class BMWClient {
       const data: any = {
         vin,
         soc: typeof soc === 'number' ? soc : undefined,
-        remainingRange: typeof remainingRange === 'number' ? remainingRange : undefined,
+        remainingRange: userRemainingRange,
+        remainingRangeKm,
+        remainingRangeMiles,
+        distanceUnit,
         isCharging: undefined,
         chargingStatus: undefined,
         lockStatus: locked === true ? 'LOCKED' : locked === false ? 'UNLOCKED' : undefined,
@@ -451,7 +461,7 @@ export class BMWClient {
       console.log(`[BMWClient] MQTT vehicle update received for ${vin}`);
       const summary =
         `SOC=${data.soc ?? 'unknown'} ` +
-        `Range=${data.remainingRange ?? 'unknown'} ` +
+        `Range=${data.remainingRange ?? 'unknown'}${data.remainingRange !== undefined ? data.distanceUnit : ''} ` +
         `Charging=${data.isCharging ?? 'unknown'} ` +
         `Lock=${data.lockStatus ?? 'unknown'} ` +
         `DoorsOpen=${data.doorsOpen ?? 'unknown'} ` +

@@ -1,4 +1,5 @@
 export interface BMHomePlatformConfig {
+  distanceUnit?: 'mi' | 'km';
   platform?: string;
   name: string;
   clientId: string;
