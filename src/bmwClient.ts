@@ -393,6 +393,8 @@ export class BMWClient {
       };
 
       const soc =
+        value('vehicle.drivetrain.batteryManagement.header') ??
+        value('vehicle.trip.segment.end.drivetrain.batteryManagement.hvSoc') ??
         value('vehicle.drivetrain.highVoltageBattery.stateOfCharge') ??
         value('vehicle.drivetrain.highVoltageBattery.soc');
 
@@ -409,6 +411,9 @@ export class BMWClient {
         ? Math.round(remainingRangeKm * 0.621371)
         : undefined;
       const userRemainingRange = distanceUnit === 'km' ? remainingRangeKm : remainingRangeMiles;
+
+      const chargingPortStatus = value('vehicle.body.chargingPort.status');
+      const chargingPower = value('vehicle.powertrain.electric.battery.charging.power');
 
       const lockRaw =
         value('vehicle.security.centralLock.status') ??
@@ -427,6 +432,7 @@ export class BMWClient {
         'vehicle.cabin.door.row2.driver.isOpen',
         'vehicle.cabin.door.row2.passenger.isOpen',
         'vehicle.body.trunk.door.isOpen',
+        'vehicle.body.trunk.isOpen',
         'vehicle.body.tailgate.isOpen'
       ]);
 
@@ -435,7 +441,8 @@ export class BMWClient {
         'vehicle.cabin.window.row1.passenger.status',
         'vehicle.cabin.window.row2.driver.status',
         'vehicle.cabin.window.row2.passenger.status',
-        'vehicle.cabin.sunroof.status'
+        'vehicle.cabin.sunroof.status',
+        'vehicle.cabin.convertible.roofRetractableStatus'
       ]);
 
       const tyrePressures = [
@@ -454,8 +461,11 @@ export class BMWClient {
         distanceUnit,
         remainingFuel: typeof remainingFuel === 'number' ? remainingFuel : undefined,
         vehicleBrand: this.detectVehicleBrand(vin),
-        isCharging: undefined,
-        chargingStatus: undefined,
+        isCharging: typeof chargingPower === 'number' ? chargingPower > 0 : undefined,
+        chargingStatus: typeof chargingPower === 'number' && chargingPower > 0 ? 'CHARGING' : undefined,
+        chargingPortStatus,
+        chargingPower: typeof chargingPower === 'number' ? chargingPower : undefined,
+        pluggedIn: chargingPortStatus === 'CONNECTED',
         lockStatus: locked === true ? 'LOCKED' : locked === false ? 'UNLOCKED' : undefined,
         locked,
         doorsOpen,
@@ -472,6 +482,8 @@ export class BMWClient {
         `SOC=${data.soc ?? 'unknown'} ` +
         `Range=${data.remainingRange ?? 'unknown'}${data.remainingRange !== undefined ? data.distanceUnit : ''} ` +
         `Charging=${data.isCharging ?? 'unknown'} ` +
+        `PluggedIn=${data.pluggedIn ?? 'unknown'} ` +
+        `${data.chargingPower !== undefined ? `ChargingPower=${data.chargingPower}W ` : ''}` +
         `Lock=${data.lockStatus ?? 'unknown'} ` +
         `DoorsOpen=${data.doorsOpen ?? 'unknown'} ` +
         `WindowsOpen=${data.windowsOpen ?? 'unknown'} ` +
