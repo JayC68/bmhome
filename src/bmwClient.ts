@@ -44,7 +44,6 @@ function decodeJwtPayload(token?: string): any {
 
 export class BMWClient {
   private descriptorState: Record<string, any> = {};
-  private discoveredDescriptorPaths = new Set<string>();
   private lastMqttAuthErrorLogAt = 0;
   private lastMqttCloseLogAt = 0;
   private lastParsedSummary = '';
@@ -333,39 +332,6 @@ export class BMWClient {
     });
   }
 
-  private logCandidateDescriptors(data: Record<string, any>): void {
-    const patterns = [
-      /battery/i,
-      /soc/i,
-      /charge/i,
-      /charging/i,
-      /energy/i,
-      /hv/i
-    ];
-
-    for (const [path, entry] of Object.entries(data || {})) {
-      if (this.discoveredDescriptorPaths.has(path)) {
-        continue;
-      }
-
-      if (!patterns.some((pattern) => pattern.test(path))) {
-        continue;
-      }
-
-      this.discoveredDescriptorPaths.add(path);
-
-      const value = entry && typeof entry === 'object' && 'value' in entry
-        ? (entry as any).value
-        : entry;
-
-      const unit = entry && typeof entry === 'object' && 'unit' in entry
-        ? ` ${(entry as any).unit}`
-        : '';
-
-      console.log(`[BMWClient] Candidate battery/charge descriptor: ${path} = ${JSON.stringify(value)}${unit}`);
-    }
-  }
-
   private detectVehicleBrand(vin?: string): 'BMW' | 'MINI' {
     const wmi = (vin || '').slice(0, 3).toUpperCase();
     return wmi === 'WMW' ? 'MINI' : 'BMW';
@@ -397,7 +363,6 @@ export class BMWClient {
 
       if (json?.data && typeof json.data === 'object') {
         Object.assign(this.descriptorState, json.data);
-        this.logCandidateDescriptors(json.data);
       }
 
       const value = (path: string): any => {
