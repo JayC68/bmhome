@@ -462,7 +462,10 @@ export class BMWClient {
         'vehicle.cabin.door.row1.driver.isOpen',
         'vehicle.cabin.door.row1.passenger.isOpen',
         'vehicle.cabin.door.row2.driver.isOpen',
-        'vehicle.cabin.door.row2.passenger.isOpen',
+        'vehicle.cabin.door.row2.passenger.isOpen'
+      ]);
+
+      const bootOpen = anyNotClosed([
         'vehicle.body.trunk.door.isOpen',
         'vehicle.body.trunk.isOpen',
         'vehicle.body.tailgate.isOpen'
@@ -502,6 +505,7 @@ export class BMWClient {
         lockStatus: locked === true ? 'LOCKED' : locked === false ? 'UNLOCKED' : undefined,
         locked,
         doorsOpen,
+        bootOpen,
         windowsOpen,
         tyrePressures,
         tyresOk: this.tyresOk(tyrePressures),
@@ -521,6 +525,7 @@ export class BMWClient {
         `Lock=${data.lockStatus ?? 'unknown'} ` +
         `DoorsOpen=${data.doorsOpen ?? 'unknown'} ` +
         `WindowsOpen=${data.windowsOpen ?? 'unknown'} ` +
+        `BootOpen=${data.bootOpen ?? 'unknown'} ` +
         `Tyres=${tyrePressures.length}/4${data.tyresOk !== undefined ? ` TyresOk=${data.tyresOk}` : ''} ` +
         `Brand=${data.vehicleBrand}` +
         `${data.remainingFuel !== undefined ? ` Fuel=${data.remainingFuel}` : ''}`;

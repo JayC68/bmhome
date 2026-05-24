@@ -14,10 +14,24 @@ export interface VehicleData {
   soc?: number;
   rawSoc?: number;
   remainingRange?: number;
+  remainingRangeKm?: number;
+  remainingRangeMiles?: number;
+  distanceUnit?: 'mi' | 'km';
   isCharging?: boolean;
+  pluggedIn?: boolean;
+  chargingPortStatus?: string;
+  chargingPower?: number;
   chargingStatus?: string;
-  lockStatus?: 'locked' | 'unlocked' | 'unknown';
+  lockStatus?: 'locked' | 'unlocked' | 'unknown' | 'LOCKED' | 'UNLOCKED';
+  locked?: boolean;
   preconditionActive?: boolean;
+  doorsOpen?: boolean;
+  windowsOpen?: boolean;
+  bootOpen?: boolean;
+  tyrePressures?: number[];
+  tyresOk?: boolean;
+  vehicleBrand?: 'BMW' | 'MINI';
+  rawDescriptors?: unknown;
   raw?: unknown;
   timestamp: Date;
 }

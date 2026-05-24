@@ -8,9 +8,14 @@ export class VehicleAccessory {
   private readonly client: BMWClient;
   private readonly vin: string;
   private readonly pollingInterval: number;
+
   private lockService!: Service;
   private batteryService!: Service;
   private heaterService!: Service;
+  private doorsService!: Service;
+  private windowsService!: Service;
+  private bootService!: Service;
+  private tyresService!: Service;
 
   constructor(
     log: Logging,
@@ -39,12 +44,12 @@ export class VehicleAccessory {
 
     accessory.getService(api.hap.Service.AccessoryInformation)!
       .setCharacteristic(api.hap.Characteristic.Manufacturer, 'BMW Group')
-      .setCharacteristic(api.hap.Characteristic.Model, 'BMW Vehicle')
+      .setCharacteristic(api.hap.Characteristic.Model, 'BMW / MINI Vehicle')
       .setCharacteristic(api.hap.Characteristic.SerialNumber, vin || 'auto');
 
     this.lockService =
       accessory.getService(api.hap.Service.LockMechanism) ??
-      accessory.addService(api.hap.Service.LockMechanism, `${name} Door Lock`, 'lock');
+      accessory.addService(api.hap.Service.LockMechanism, `${name} Lock`, 'lock');
 
     this.batteryService =
       accessory.getService(api.hap.Service.Battery) ??
@@ -53,6 +58,22 @@ export class VehicleAccessory {
     this.heaterService =
       accessory.getService(api.hap.Service.HeaterCooler) ??
       accessory.addService(api.hap.Service.HeaterCooler, `${name} Preconditioning`, 'heat');
+
+    this.doorsService =
+      accessory.getService('Doors') ??
+      accessory.addService(api.hap.Service.ContactSensor, `${name} Doors`, 'doors');
+
+    this.windowsService =
+      accessory.getService('Windows') ??
+      accessory.addService(api.hap.Service.ContactSensor, `${name} Windows`, 'windows');
+
+    this.bootService =
+      accessory.getService('Boot') ??
+      accessory.addService(api.hap.Service.ContactSensor, `${name} Boot`, 'boot');
+
+    this.tyresService =
+      accessory.getService('Tyres OK') ??
+      accessory.addService(api.hap.Service.Switch, `${name} Tyres OK`, 'tyres');
 
     this.setupHandlers();
     this.fetchAndUpdate();
@@ -81,7 +102,14 @@ export class VehicleAccessory {
         );
 
         this.log.warn(result.message);
-        });
+      });
+
+    this.tyresService
+      .getCharacteristic(Characteristic.On)
+      .onSet(() => {
+        // Read-only semantic switch. Reverted on next update.
+        this.log.info('Tyres OK is read-only; BMW tyre pressure data controls this tile.');
+      });
   }
 
   private async fetchAndUpdate(): Promise<void> {
@@ -99,11 +127,26 @@ export class VehicleAccessory {
     setInterval(() => this.fetchAndUpdate(), this.pollingInterval);
   }
 
+  private updateContact(service: Service, open: boolean | undefined): void {
+    const { Characteristic } = this.api.hap;
+
+    if (open === undefined) {
+      return;
+    }
+
+    service.updateCharacteristic(
+      Characteristic.ContactSensorState,
+      open
+        ? Characteristic.ContactSensorState.CONTACT_NOT_DETECTED
+        : Characteristic.ContactSensorState.CONTACT_DETECTED,
+    );
+  }
+
   private updateCharacteristics(data: VehicleData): void {
     const { Characteristic } = this.api.hap;
 
     if (data.lockStatus && data.lockStatus !== 'unknown') {
-      const isLocked = data.lockStatus === 'locked';
+      const isLocked = data.lockStatus === 'locked' || data.lockStatus === 'LOCKED';
 
       this.lockService.updateCharacteristic(
         Characteristic.LockCurrentState,
@@ -143,6 +186,14 @@ export class VehicleAccessory {
         Characteristic.Active,
         data.preconditionActive ? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE,
       );
+    }
+
+    this.updateContact(this.doorsService, data.doorsOpen);
+    this.updateContact(this.windowsService, data.windowsOpen);
+    this.updateContact(this.bootService, data.bootOpen);
+
+    if (data.tyresOk !== undefined) {
+      this.tyresService.updateCharacteristic(Characteristic.On, data.tyresOk);
     }
 
     this.log.debug(`Characteristics updated for VIN: ${data.vin ?? this.vin}`);
