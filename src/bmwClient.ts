@@ -332,6 +332,36 @@ export class BMWClient {
     });
   }
 
+  private clampHomeKitBatteryLevel(value?: number): number | undefined {
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      return undefined;
+    }
+
+    const rounded = Math.round(value);
+
+    // Apple Home treats 0% and 100% awkwardly for battery-style tiles.
+    // Show a useful visible range while preserving the real raw value separately.
+    if (rounded <= 0) {
+      return 1;
+    }
+
+    if (rounded >= 100) {
+      return 99;
+    }
+
+    return rounded;
+  }
+
+  private tyresOk(pressures: number[]): boolean | undefined {
+    if (!Array.isArray(pressures) || pressures.length < 4) {
+      return undefined;
+    }
+
+    // Current BMW stream reports kPa. We use a deliberately broad sanity band
+    // for a simple HomeKit OK/Not OK status rather than exposing noisy per-tyre tiles.
+    return pressures.every((pressure) => pressure >= 180 && pressure <= 360);
+  }
+
   private detectVehicleBrand(vin?: string): 'BMW' | 'MINI' {
     const wmi = (vin || '').slice(0, 3).toUpperCase();
     return wmi === 'WMW' ? 'MINI' : 'BMW';
@@ -392,11 +422,13 @@ export class BMWClient {
         return seen ? false : undefined;
       };
 
-      const soc =
+      const rawSoc =
         value('vehicle.drivetrain.batteryManagement.header') ??
         value('vehicle.trip.segment.end.drivetrain.batteryManagement.hvSoc') ??
         value('vehicle.drivetrain.highVoltageBattery.stateOfCharge') ??
         value('vehicle.drivetrain.highVoltageBattery.soc');
+
+      const soc = this.clampHomeKitBatteryLevel(rawSoc);
 
       const remainingRange =
         value('vehicle.drivetrain.electricEngine.kombiRemainingElectricRange') ??
@@ -454,6 +486,7 @@ export class BMWClient {
 
       const data: any = {
         vin,
+        rawSoc: typeof rawSoc === 'number' ? rawSoc : undefined,
         soc: typeof soc === 'number' ? soc : undefined,
         remainingRange: userRemainingRange,
         remainingRangeKm,
@@ -471,6 +504,7 @@ export class BMWClient {
         doorsOpen,
         windowsOpen,
         tyrePressures,
+        tyresOk: this.tyresOk(tyrePressures),
         raw: json,
         rawDescriptors: this.descriptorState,
         timestamp: new Date(),
@@ -479,7 +513,7 @@ export class BMWClient {
       this.latestVehicleData = data;
 
       const summary =
-        `SOC=${data.soc ?? 'unknown'} ` +
+        `SOC=${data.soc ?? 'unknown'}${data.rawSoc !== undefined && data.rawSoc !== data.soc ? ` raw=${data.rawSoc}` : ''} ` +
         `Range=${data.remainingRange ?? 'unknown'}${data.remainingRange !== undefined ? data.distanceUnit : ''} ` +
         `Charging=${data.isCharging ?? 'unknown'} ` +
         `PluggedIn=${data.pluggedIn ?? 'unknown'} ` +
@@ -487,7 +521,7 @@ export class BMWClient {
         `Lock=${data.lockStatus ?? 'unknown'} ` +
         `DoorsOpen=${data.doorsOpen ?? 'unknown'} ` +
         `WindowsOpen=${data.windowsOpen ?? 'unknown'} ` +
-        `Tyres=${tyrePressures.length}/4 ` +
+        `Tyres=${tyrePressures.length}/4${data.tyresOk !== undefined ? ` TyresOk=${data.tyresOk}` : ''} ` +
         `Brand=${data.vehicleBrand}` +
         `${data.remainingFuel !== undefined ? ` Fuel=${data.remainingFuel}` : ''}`;
 

@@ -12,6 +12,7 @@ export interface BMHomePlatformConfig {
 export interface VehicleData {
   vin: string;
   soc?: number;
+  rawSoc?: number;
   remainingRange?: number;
   isCharging?: boolean;
   chargingStatus?: string;
