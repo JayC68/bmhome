@@ -196,6 +196,6 @@ export class VehicleAccessory {
       this.tyresService.updateCharacteristic(Characteristic.On, data.tyresOk);
     }
 
-    this.log.debug(`Characteristics updated for VIN: ${data.vin ?? this.vin}`);
+    this.log.debug(`Characteristics updated for VIN: ${data.vin ?? this.vin}${data.restoredFromCache ? ' (cached)' : ''}`);
   }
 }

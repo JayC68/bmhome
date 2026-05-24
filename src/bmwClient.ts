@@ -53,6 +53,7 @@ export class BMWClient {
   private mqttClient?: mqtt.MqttClient;
   private tokenStore: TokenStore = {};
   private readonly tokenFile: string;
+  private readonly vehicleStateFile: string;
   private latestVehicleData: VehicleData | null = null;
   private mqttConnected = false;
   private lastMqttMessageAt?: Date;
@@ -69,7 +70,9 @@ export class BMWClient {
     }
 
     this.tokenFile = path.join(bmhomeDir, 'cardata-token-store.json');
+    this.vehicleStateFile = path.join(bmhomeDir, 'last-vehicle-state.json');
     this.loadTokenStore();
+    this.loadVehicleState();
   }
 
   async initialize(): Promise<boolean> {
@@ -515,6 +518,7 @@ export class BMWClient {
       };
 
       this.latestVehicleData = data;
+      this.saveVehicleState(data);
 
       const summary =
         `SOC=${data.soc ?? 'unknown'}${data.rawSoc !== undefined && data.rawSoc !== data.soc ? ` raw=${data.rawSoc}` : ''} ` +
@@ -573,6 +577,52 @@ export class BMWClient {
       this.tokenStore.expiresAt &&
       this.tokenStore.expiresAt > Date.now() + 60000,
     );
+  }
+
+  private loadVehicleState(): void {
+    try {
+      if (!fs.existsSync(this.vehicleStateFile)) {
+        return;
+      }
+
+      const parsed = JSON.parse(fs.readFileSync(this.vehicleStateFile, 'utf8'));
+
+      if (!parsed || typeof parsed !== 'object') {
+        return;
+      }
+
+      this.latestVehicleData = {
+        ...parsed,
+        timestamp: parsed.timestamp ? new Date(parsed.timestamp) : new Date(),
+        restoredFromCache: true,
+      } as VehicleData;
+
+      console.log(`[BMWClient] Restored last known BMW state from local cache for VIN: ${this.latestVehicleData?.vin || this.config.vin || 'unknown'}`);
+    } catch (err: any) {
+      console.warn(`[BMWClient] Could not restore last vehicle state: ${err?.message || err}`);
+    }
+  }
+
+  private saveVehicleState(data: VehicleData): void {
+    try {
+      const safeData = {
+        ...data,
+        raw: undefined,
+        rawDescriptors: undefined,
+        restoredFromCache: undefined,
+        cachedAt: new Date().toISOString(),
+      };
+
+      fs.writeFileSync(this.vehicleStateFile, JSON.stringify(safeData, null, 2));
+
+      try {
+        fs.chmodSync(this.vehicleStateFile, 0o600);
+      } catch {
+        // Best effort only.
+      }
+    } catch (err: any) {
+      console.warn(`[BMWClient] Could not save last vehicle state: ${err?.message || err}`);
+    }
   }
 
   private loadTokenStore(): void {

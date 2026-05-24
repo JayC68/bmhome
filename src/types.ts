@@ -32,6 +32,8 @@ export interface VehicleData {
   tyresOk?: boolean;
   vehicleBrand?: 'BMW' | 'MINI';
   rawDescriptors?: unknown;
+  restoredFromCache?: boolean;
+  cachedAt?: string;
   raw?: unknown;
   timestamp: Date;
 }
