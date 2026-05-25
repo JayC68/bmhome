@@ -12,7 +12,6 @@ export class VehicleAccessory {
   private lockService!: Service;
   private batteryService!: Service;
   private heaterService!: Service;
-  private doorsService!: Service;
   private windowsService!: Service;
   private bootService!: Service;
   private tyresService!: Service;
@@ -59,10 +58,6 @@ export class VehicleAccessory {
       accessory.getService(api.hap.Service.HeaterCooler) ??
       accessory.addService(api.hap.Service.HeaterCooler, 'BMW Preconditioning', 'heat');
 
-    this.doorsService =
-      accessory.getServiceById(api.hap.Service.ContactSensor, 'doors') ??
-      accessory.addService(api.hap.Service.ContactSensor, 'BMW Doors', 'doors');
-
     this.windowsService =
       accessory.getServiceById(api.hap.Service.ContactSensor, 'windows') ??
       accessory.addService(api.hap.Service.ContactSensor, 'BMW Windows', 'windows');
@@ -78,7 +73,6 @@ export class VehicleAccessory {
     this.setServiceName(this.lockService, 'BMW Lock');
     this.setServiceName(this.batteryService, 'BMW Battery');
     this.setServiceName(this.heaterService, 'BMW Preconditioning');
-    this.setServiceName(this.doorsService, 'BMW Doors');
     this.setServiceName(this.windowsService, 'BMW Windows');
     this.setServiceName(this.bootService, 'BMW Boot');
     this.setServiceName(this.tyresService, 'BMW Tyres');
@@ -208,7 +202,6 @@ export class VehicleAccessory {
       );
     }
 
-    this.updateContact(this.doorsService, data.doorsOpen);
     this.updateContact(this.windowsService, data.windowsOpen);
     this.updateContact(this.bootService, data.bootOpen);
 
