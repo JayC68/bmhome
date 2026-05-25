@@ -49,35 +49,55 @@ export class VehicleAccessory {
 
     this.lockService =
       accessory.getService(api.hap.Service.LockMechanism) ??
-      accessory.addService(api.hap.Service.LockMechanism, `${name} Lock`, 'lock');
+      accessory.addService(api.hap.Service.LockMechanism, 'BMW Lock', 'lock');
 
     this.batteryService =
       accessory.getService(api.hap.Service.Battery) ??
-      accessory.addService(api.hap.Service.Battery, `${name} Battery`, 'battery');
+      accessory.addService(api.hap.Service.Battery, 'BMW Battery', 'battery');
 
     this.heaterService =
       accessory.getService(api.hap.Service.HeaterCooler) ??
-      accessory.addService(api.hap.Service.HeaterCooler, `${name} Preconditioning`, 'heat');
+      accessory.addService(api.hap.Service.HeaterCooler, 'BMW Preconditioning', 'heat');
 
     this.doorsService =
       accessory.getServiceById(api.hap.Service.ContactSensor, 'doors') ??
-      accessory.addService(api.hap.Service.ContactSensor, `${name} Doors`, 'doors');
+      accessory.addService(api.hap.Service.ContactSensor, 'BMW Doors', 'doors');
 
     this.windowsService =
       accessory.getServiceById(api.hap.Service.ContactSensor, 'windows') ??
-      accessory.addService(api.hap.Service.ContactSensor, `${name} Windows`, 'windows');
+      accessory.addService(api.hap.Service.ContactSensor, 'BMW Windows', 'windows');
 
     this.bootService =
       accessory.getServiceById(api.hap.Service.ContactSensor, 'boot') ??
-      accessory.addService(api.hap.Service.ContactSensor, `${name} Boot`, 'boot');
+      accessory.addService(api.hap.Service.ContactSensor, 'BMW Boot', 'boot');
 
     this.tyresService =
       accessory.getServiceById(api.hap.Service.Switch, 'tyres') ??
-      accessory.addService(api.hap.Service.Switch, `${name} Tyres OK`, 'tyres');
+      accessory.addService(api.hap.Service.Switch, 'BMW Tyres', 'tyres');
+
+    this.setServiceName(this.lockService, 'BMW Lock');
+    this.setServiceName(this.batteryService, 'BMW Battery');
+    this.setServiceName(this.heaterService, 'BMW Preconditioning');
+    this.setServiceName(this.doorsService, 'BMW Doors');
+    this.setServiceName(this.windowsService, 'BMW Windows');
+    this.setServiceName(this.bootService, 'BMW Boot');
+    this.setServiceName(this.tyresService, 'BMW Tyres');
 
     this.setupHandlers();
     this.fetchAndUpdate();
     this.startPolling();
+  }
+
+  private setServiceName(service: Service, name: string): void {
+    const { Characteristic } = this.api.hap;
+
+    service.setCharacteristic(Characteristic.Name, name);
+
+    try {
+      service.setCharacteristic(Characteristic.ConfiguredName, name);
+    } catch {
+      // ConfiguredName is not available on every Homebridge/HAP version.
+    }
   }
 
   private setupHandlers(): void {
