@@ -60,19 +60,19 @@ export class VehicleAccessory {
       accessory.addService(api.hap.Service.HeaterCooler, `${name} Preconditioning`, 'heat');
 
     this.doorsService =
-      accessory.getService('Doors') ??
+      accessory.getServiceById(api.hap.Service.ContactSensor, 'doors') ??
       accessory.addService(api.hap.Service.ContactSensor, `${name} Doors`, 'doors');
 
     this.windowsService =
-      accessory.getService('Windows') ??
+      accessory.getServiceById(api.hap.Service.ContactSensor, 'windows') ??
       accessory.addService(api.hap.Service.ContactSensor, `${name} Windows`, 'windows');
 
     this.bootService =
-      accessory.getService('Boot') ??
+      accessory.getServiceById(api.hap.Service.ContactSensor, 'boot') ??
       accessory.addService(api.hap.Service.ContactSensor, `${name} Boot`, 'boot');
 
     this.tyresService =
-      accessory.getService('Tyres OK') ??
+      accessory.getServiceById(api.hap.Service.Switch, 'tyres') ??
       accessory.addService(api.hap.Service.Switch, `${name} Tyres OK`, 'tyres');
 
     this.setupHandlers();
