@@ -1,4 +1,6 @@
-# BMHome
+from pathlib import Path
+
+readme = """# BMHome
 
 **Your BMW, integrated into Apple Home.**
 
@@ -174,3 +176,108 @@ Feedback and issue reports are welcome on GitHub.
 BMHome is an independent Homebridge plugin.
 
 It is not affiliated with, endorsed by, or sponsored by BMW AG, BMW Group, MINI, Apple, or Homebridge.
+"""
+
+changelog = """# Changelog
+
+## 0.1.0-beta.29
+
+### Changed
+
+- Removed the legacy BMW Preconditioning tile.
+- Simplified the Apple Home layout to focus on proven useful tiles.
+- Refreshed README for public beta users.
+- Updated package metadata for Homebridge 2.x compatibility.
+- Improved consumer-facing wording around BMW CarData Stream behaviour.
+
+### Fixed
+
+- Removed unimplemented HeaterCooler / climate placeholder service.
+- Reduced risk of confusing unsupported controls in Apple Home.
+- Kept quiet MQTT reconnect/logging behaviour.
+
+### Notes
+
+BMHome currently focuses on presenting BMW CarData Stream telemetry in Apple Home.
+
+Remote lock/unlock and climate commands remain under research and are not currently implemented as reliable user-facing features.
+
+---
+
+## 0.1.0-beta.28
+
+### Changed
+
+- Removed the standalone BMW Doors tile from the HomeKit surface.
+- Kept Windows and Boot as more useful physical-state sensors.
+
+## 0.1.0-beta.27
+
+### Changed
+
+- Added human-readable HomeKit service names.
+- Improved Apple Home tile clarity.
+
+## 0.1.0-beta.26
+
+### Fixed
+
+- Fixed cached HomeKit service restoration using stable service subtypes.
+
+## 0.1.0-beta.25
+
+### Added
+
+- Added last-known vehicle state persistence.
+
+## 0.1.0-beta.24
+
+### Added
+
+- Added HomeKit services for Battery, Windows, Boot and Tyres.
+- Added tyre OK summary state.
+
+## 0.1.0-beta.22
+
+### Added
+
+- Confirmed and finalised BMW state-of-charge parsing via `vehicle.drivetrain.batteryManagement.header`.
+"""
+
+release_notes = """# BMHome 0.1.0-beta.29
+
+## Public Beta Polish
+
+This release removes the legacy Preconditioning tile and simplifies the Apple Home experience around the most useful BMW CarData information.
+
+## What Changed
+
+- Removed unimplemented BMW Preconditioning tile
+- Simplified Apple Home layout
+- Refreshed README for public beta users
+- Updated package metadata for Homebridge 2.x compatibility
+- Improved wording around BMW CarData Stream behaviour
+
+## Apple Home Tiles
+
+BMHome now focuses on:
+
+- BMW Battery
+- BMW Lock
+- BMW Windows
+- BMW Boot
+- BMW Tyres
+
+## Notes
+
+BMHome uses BMW CarData Stream. BMW controls which vehicle data is published and when updates arrive.
+
+Some data shown in the MyBMW app may not be emitted immediately, or at all, through CarData Stream for every vehicle.
+"""
+
+Path("README.md").write_text(readme)
+Path("CHANGELOG.md").write_text(changelog)
+Path(".homebridge").mkdir(exist_ok=True)
+Path(".homebridge/release-notes.md").write_text(release_notes)
+
+print("Wrote README.md, CHANGELOG.md and .homebridge/release-notes.md")

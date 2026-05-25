@@ -11,7 +11,6 @@ export class VehicleAccessory {
 
   private lockService!: Service;
   private batteryService!: Service;
-  private heaterService!: Service;
   private windowsService!: Service;
   private bootService!: Service;
   private tyresService!: Service;
@@ -54,9 +53,6 @@ export class VehicleAccessory {
       accessory.getService(api.hap.Service.Battery) ??
       accessory.addService(api.hap.Service.Battery, 'BMW Battery', 'battery');
 
-    this.heaterService =
-      accessory.getService(api.hap.Service.HeaterCooler) ??
-      accessory.addService(api.hap.Service.HeaterCooler, 'BMW Preconditioning', 'heat');
 
     this.windowsService =
       accessory.getServiceById(api.hap.Service.ContactSensor, 'windows') ??
@@ -72,7 +68,6 @@ export class VehicleAccessory {
 
     this.setServiceName(this.lockService, 'BMW Lock');
     this.setServiceName(this.batteryService, 'BMW Battery');
-    this.setServiceName(this.heaterService, 'BMW Preconditioning');
     this.setServiceName(this.windowsService, 'BMW Windows');
     this.setServiceName(this.bootService, 'BMW Boot');
     this.setServiceName(this.tyresService, 'BMW Tyres');
@@ -107,16 +102,6 @@ export class VehicleAccessory {
         this.log.warn(result.message);
       });
 
-    this.heaterService
-      .getCharacteristic(Characteristic.Active)
-      .onSet(async (value) => {
-        const result = await this.client.precondition(
-          this.vin,
-          value === Characteristic.Active.ACTIVE,
-        );
-
-        this.log.warn(result.message);
-      });
 
     this.tyresService
       .getCharacteristic(Characteristic.On)
@@ -195,12 +180,6 @@ export class VehicleAccessory {
       );
     }
 
-    if (data.preconditionActive !== undefined) {
-      this.heaterService.updateCharacteristic(
-        Characteristic.Active,
-        data.preconditionActive ? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE,
-      );
-    }
 
     this.updateContact(this.windowsService, data.windowsOpen);
     this.updateContact(this.bootService, data.bootOpen);
