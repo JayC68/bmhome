@@ -1,64 +1,19 @@
 # Changelog
 
-## 0.1.0-beta.29
+## v0.1.0-beta.30
 
 ### Changed
 
-- Removed the legacy BMW Preconditioning tile.
-- Simplified the Apple Home layout to focus on proven useful tiles.
-- Refreshed README for public beta users.
-- Updated package metadata for Homebridge 2.x compatibility.
-- Improved consumer-facing wording around BMW CarData Stream behaviour.
-
-### Fixed
-
-- Removed unimplemented HeaterCooler / climate placeholder service.
-- Reduced risk of confusing unsupported controls in Apple Home.
-- Kept quiet MQTT reconnect/logging behaviour.
+- Repositioned BMHome as a telemetry-focused BMW CarData integration
+- Removed Lock accessory/tile
+- Removed remote-control wording and semantics
+- Simplified Apple Home presentation
+- Improved README transparency around BMW CarData limitations
+- Clarified telemetry variability and vehicle sleep behaviour
 
 ### Notes
 
-BMHome currently focuses on presenting BMW CarData Stream telemetry in Apple Home.
+BMW currently limits third-party integrations primarily to telemetry data exposed through BMW CarData Stream.
 
-Remote lock/unlock and climate commands remain under research and are not currently implemented as reliable user-facing features.
+BMHome intentionally focuses on stable Apple Home telemetry surfaces rather than unsupported remote-control features.
 
----
-
-## 0.1.0-beta.28
-
-### Changed
-
-- Removed the standalone BMW Doors tile from the HomeKit surface.
-- Kept Windows and Boot as more useful physical-state sensors.
-
-## 0.1.0-beta.27
-
-### Changed
-
-- Added human-readable HomeKit service names.
-- Improved Apple Home tile clarity.
-
-## 0.1.0-beta.26
-
-### Fixed
-
-- Fixed cached HomeKit service restoration using stable service subtypes.
-
-## 0.1.0-beta.25
-
-### Added
-
-- Added last-known vehicle state persistence.
-
-## 0.1.0-beta.24
-
-### Added
-
-- Added HomeKit services for Battery, Windows, Boot and Tyres.
-- Added tyre OK summary state.
-
-## 0.1.0-beta.22
-
-### Added
-
-- Confirmed and finalised BMW state-of-charge parsing via `vehicle.drivetrain.batteryManagement.header`.

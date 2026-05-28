@@ -1,0 +1,334 @@
+== BMHome beta.12 targeted check ==
+Date: Fri 22 May 08:35:06 BST 2026
+
+1. Installed package
+homebridge-bmhome@0.1.0-beta.12
+displayName=BM Home
+
+2. Config and token summary
+host=customer.streaming-cardata.bmwgroup.com
+port=9000
+username/gcid=f08d865d-0c24-48cb-a9e0-286c201a74fc
+topic=f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+vin=WBY42DU030S701129
+idToken=[present]
+accessToken=[present]
+refreshToken=[present]
+idToken.aud="76abce95-1f2d-44a7-8e71-ae70950219cc"
+idToken.scope=null
+idToken.dynamicScopes="read:streaming/*/f08d865d-0c24-48cb-a9e0-286c201a74fc.* configure:streaming/*/* write:streaming/*/^$"
+idToken.exp=1779437421
+
+3. Installed code check
+        console.log(`[BMWClient] MQTT subscribe topic (BMW docs username/topic): ${vinTopic}`);
+        console.log('[BMWClient] MQTT password source: idToken');
+            console.log('[BMWClient] BMW ID token decoded diagnostics:');
+                console.log(`[BMWClient] Subscribing to BMW documented topic: ${topic}`);
+        this.tokenStore.accessToken = data.access_token;
+        return Boolean(this.tokenStore.accessToken &&
+
+4. BMHome-only logs since latest beta.12 launch
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 268 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row1.wheel.left.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":230,"unit":"kpa"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 269 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row2.wheel.right.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":280,"unit":"kpa"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 278 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.drivetrain.electricEngine.kombiRemainingElectricRange":{"timestamp":"2026-05-22T07:34:29Z","value":261,"unit":"km"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 247 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row1.passenger.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 249 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row2.driver.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 237 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.body.trunk.door.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 252 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row1.passenger.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 268 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row2.wheel.left.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":280,"unit":"kpa"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 247 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row2.passenger.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 254 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.drivetrain.lastRemainingRange":{"timestamp":"2026-05-22T07:34:29Z","value":261,"unit":"km"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 269 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row1.wheel.right.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":240,"unit":"kpa"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 249 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row1.driver.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 252 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row2.passenger.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 244 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row1.driver.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 244 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row2.driver.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 268 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row1.wheel.left.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":230,"unit":"kpa"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 269 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row2.wheel.right.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":280,"unit":"kpa"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 278 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.drivetrain.electricEngine.kombiRemainingElectricRange":{"timestamp":"2026-05-22T07:34:29Z","value":261,"unit":"km"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 247 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row1.passenger.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 249 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row2.driver.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 237 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.body.trunk.door.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT message received on topic: f08d865d-0c24-48cb-a9e0-286c201a74fc/WBY42DU030S701129
+[BMWClient] MQTT payload size: 252 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row1.passenger.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT parsed top-level keys: vin, entityId, topic, timestamp, data
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT vehicle update received for WBY42DU030S701129
+[BMWClient] Parsed vehicle state: SOC=unknown Range=unknown Charging=unknown Lock=unknown
+
+5. Exact MQTT outcome
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 268 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row2.wheel.left.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":280,"unit":"kpa"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 247 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row2.passenger.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 254 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.drivetrain.lastRemainingRange":{"timestamp":"2026-05-22T07:34:29Z","value":261,"unit":"km"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 269 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row1.wheel.right.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":240,"unit":"kpa"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 249 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row1.driver.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 252 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row2.passenger.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 244 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row1.driver.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 244 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row2.driver.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 268 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row1.wheel.left.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":230,"unit":"kpa"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 269 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row2.wheel.right.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":280,"unit":"kpa"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 278 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.drivetrain.electricEngine.kombiRemainingElectricRange":{"timestamp":"2026-05-22T07:34:29Z","value":261,"unit":"km"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 247 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row1.passenger.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 249 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row2.driver.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 237 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.body.trunk.door.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 252 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row1.passenger.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 268 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row2.wheel.left.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":280,"unit":"kpa"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 247 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row2.passenger.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 254 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.drivetrain.lastRemainingRange":{"timestamp":"2026-05-22T07:34:29Z","value":261,"unit":"km"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 269 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row1.wheel.right.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":240,"unit":"kpa"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 249 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row1.driver.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 252 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row2.passenger.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 244 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row1.driver.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 244 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row2.driver.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 268 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row1.wheel.left.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":230,"unit":"kpa"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 269 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.chassis.axle.row2.wheel.right.tire.pressure":{"timestamp":"2026-05-22T07:34:29Z","value":280,"unit":"kpa"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 278 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.drivetrain.electricEngine.kombiRemainingElectricRange":{"timestamp":"2026-05-22T07:34:29Z","value":261,"unit":"km"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 247 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.door.row1.passenger.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 249 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row2.driver.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 237 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.body.trunk.door.isOpen":{"timestamp":"2026-05-22T07:34:29Z","value":false}}}
+[BMWClient] MQTT RAW PAYLOAD END
+[BMWClient] MQTT RAW PAYLOAD START
+[BMWClient] MQTT payload size: 252 bytes
+[BMWClient] MQTT payload preview: {"vin":"WBY42DU030S701129","entityId":"f08d865d-0c24-48cb-a9e0-286c201a74fc","topic":"WBY42DU030S701129","timestamp":"2026-05-22T07:34:29.222Z","data":{"vehicle.cabin.window.row1.passenger.status":{"timestamp":"2026-05-22T07:34:29Z","value":"CLOSED"}}}
+[BMWClient] MQTT RAW PAYLOAD END
+
+== Done ==

@@ -58,7 +58,7 @@ Current limitations:
 
 - BMW CarData Stream is event-driven and can be delayed
 - Some selected descriptors may not be emitted by BMW for every vehicle
-- Lock/unlock command support remains under research
+- 
 - Charging state and charging power may not be published reliably
 - MINI support is expected through BMW Group CarData but is not yet widely field-tested
 
@@ -174,3 +174,31 @@ Feedback and issue reports are welcome on GitHub.
 BMHome is an independent Homebridge plugin.
 
 It is not affiliated with, endorsed by, or sponsored by BMW AG, BMW Group, MINI, Apple, or Homebridge.
+
+---
+
+## BMW CarData Limitations
+
+BMHome uses BMW CarData Stream, which is currently a telemetry-focused platform.
+
+BMW presently restricts most third-party command and remote-control functionality, including vehicle lock/unlock operations.
+
+Because BMHome only exposes data BMW publishes through CarData Stream:
+
+- some values may be delayed
+- some values may disappear temporarily
+- some descriptors may not exist for all vehicles
+- updates may pause while the vehicle sleeps
+- telemetry availability varies by region, firmware and vehicle model
+
+Current BMHome focus areas:
+
+- EV range visibility
+- battery telemetry (when available)
+- window-open awareness
+- boot/tailgate state
+- tyre status visibility
+- lightweight Apple Home presence
+
+BMHome does not attempt to bypass BMW platform restrictions.
+
