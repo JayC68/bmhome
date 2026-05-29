@@ -1,19 +1,22 @@
 # Changelog
 
-## v0.1.0-beta.30
+## 0.1.0-beta.31
 
 ### Changed
 
-- Repositioned BMHome as a telemetry-focused BMW CarData integration
-- Removed Lock accessory/tile
-- Removed remote-control wording and semantics
-- Simplified Apple Home presentation
-- Improved README transparency around BMW CarData limitations
-- Clarified telemetry variability and vehicle sleep behaviour
+- Renamed display name to BM Home Stream.
+- Removed the BMW Lock tile and HomeKit lock semantics.
+- Repositioned the plugin as telemetry-only monitoring for BMW CarData Stream.
+- Kept Apple Home focused on Battery, Windows, Boot and Tyres.
+- Updated documentation around BMW platform limitations, token refresh and event-driven updates.
 
-### Notes
+### Fixed
 
-BMW currently limits third-party integrations primarily to telemetry data exposed through BMW CarData Stream.
+- Removed misleading HomeKit lock state when BMW does not publish trusted lock telemetry.
 
-BMHome intentionally focuses on stable Apple Home telemetry surfaces rather than unsupported remote-control features.
+## 0.1.0-beta.30
 
+### Changed
+
+- Repositioned BMHome as a telemetry-only BMW CarData integration for Apple Home.
+- Updated documentation around BMW CarData Stream limitations.

@@ -1,7 +1,7 @@
 {
   "name": "homebridge-bmhome",
-  "version": "0.1.0-beta.30",
-  "description": "BMW CarData telemetry for Apple Home via Homebridge",
+  "version": "0.1.0-beta.31",
+  "description": "BM Home Stream - BMW CarData telemetry for Apple Home via Homebridge",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -11,14 +11,16 @@
   },
   "keywords": [
     "homebridge-plugin",
+    "homebridge",
+    "bmhome",
     "bmw",
     "mini",
-    "cardata",
-    "mqtt",
     "apple-home",
     "homekit",
+    "cardata",
     "telemetry",
-    "ev"
+    "ev",
+    "mqtt"
   ],
   "engines": {
     "node": "^22.0.0 || ^24.0.0",
@@ -45,5 +47,5 @@
     "homebridge": "^1.8.0",
     "typescript": "^5.8.0"
   },
-  "displayName": "BM Home"
+  "displayName": "BM Home Stream"
 }

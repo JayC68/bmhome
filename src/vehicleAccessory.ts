@@ -9,7 +9,6 @@ export class VehicleAccessory {
   private readonly vin: string;
   private readonly pollingInterval: number;
 
-  private lockService!: Service;
   private batteryService!: Service;
   private windowsService!: Service;
   private bootService!: Service;
@@ -42,17 +41,13 @@ export class VehicleAccessory {
 
     accessory.getService(api.hap.Service.AccessoryInformation)!
       .setCharacteristic(api.hap.Characteristic.Manufacturer, 'BMW Group')
-      .setCharacteristic(api.hap.Characteristic.Model, 'BMW / MINI Vehicle')
+      .setCharacteristic(api.hap.Characteristic.Model, 'BMW CarData Stream')
       .setCharacteristic(api.hap.Characteristic.SerialNumber, vin || 'auto');
 
-    this.lockService =
-      accessory.getService(api.hap.Service.LockMechanism) ??
-      accessory.addService(api.hap.Service.LockMechanism, 'BMW Lock', 'lock');
-
     this.batteryService =
+      accessory.getServiceById(api.hap.Service.Battery, 'battery') ??
       accessory.getService(api.hap.Service.Battery) ??
       accessory.addService(api.hap.Service.Battery, 'BMW Battery', 'battery');
-
 
     this.windowsService =
       accessory.getServiceById(api.hap.Service.ContactSensor, 'windows') ??
@@ -66,49 +61,23 @@ export class VehicleAccessory {
       accessory.getServiceById(api.hap.Service.Switch, 'tyres') ??
       accessory.addService(api.hap.Service.Switch, 'BMW Tyres', 'tyres');
 
-    this.setServiceName(this.lockService, 'BMW Lock');
     this.setServiceName(this.batteryService, 'BMW Battery');
     this.setServiceName(this.windowsService, 'BMW Windows');
     this.setServiceName(this.bootService, 'BMW Boot');
     this.setServiceName(this.tyresService, 'BMW Tyres');
 
-    this.setupHandlers();
     this.fetchAndUpdate();
     this.startPolling();
   }
 
   private setServiceName(service: Service, name: string): void {
     const { Characteristic } = this.api.hap;
-
     service.setCharacteristic(Characteristic.Name, name);
-
     try {
       service.setCharacteristic(Characteristic.ConfiguredName, name);
     } catch {
       // ConfiguredName is not available on every Homebridge/HAP version.
     }
-  }
-
-  private setupHandlers(): void {
-    const { Characteristic } = this.api.hap;
-
-    this.lockService
-      .getCharacteristic(Characteristic.LockTargetState)
-      .onSet(async (value) => {
-        const result = value === Characteristic.LockTargetState.SECURED
-          ? await this.client.lock(this.vin)
-          : await this.client.unlock(this.vin);
-
-        this.log.warn(result.message);
-      });
-
-
-    this.tyresService
-      .getCharacteristic(Characteristic.On)
-      .onSet(() => {
-        // Read-only semantic switch. Reverted on next update.
-        this.log.info('Tyres OK is read-only; BMW tyre pressure data controls this tile.');
-      });
   }
 
   private async fetchAndUpdate(): Promise<void> {
@@ -126,16 +95,16 @@ export class VehicleAccessory {
     setInterval(() => this.fetchAndUpdate(), this.pollingInterval);
   }
 
-  private updateContact(service: Service, open: boolean | undefined): void {
-    const { Characteristic } = this.api.hap;
-
-    if (open === undefined) {
+  private updateContact(service: Service, isOpen?: boolean): void {
+    if (isOpen === undefined) {
       return;
     }
 
+    const { Characteristic } = this.api.hap;
+
     service.updateCharacteristic(
       Characteristic.ContactSensorState,
-      open
+      isOpen
         ? Characteristic.ContactSensorState.CONTACT_NOT_DETECTED
         : Characteristic.ContactSensorState.CONTACT_DETECTED,
     );
@@ -143,20 +112,6 @@ export class VehicleAccessory {
 
   private updateCharacteristics(data: VehicleData): void {
     const { Characteristic } = this.api.hap;
-
-    if (data.lockStatus && data.lockStatus !== 'unknown') {
-      const isLocked = data.lockStatus === 'locked' || data.lockStatus === 'LOCKED';
-
-      this.lockService.updateCharacteristic(
-        Characteristic.LockCurrentState,
-        isLocked ? Characteristic.LockCurrentState.SECURED : Characteristic.LockCurrentState.UNSECURED,
-      );
-
-      this.lockService.updateCharacteristic(
-        Characteristic.LockTargetState,
-        isLocked ? Characteristic.LockTargetState.SECURED : Characteristic.LockTargetState.UNSECURED,
-      );
-    }
 
     if (data.soc !== undefined) {
       this.batteryService.updateCharacteristic(Characteristic.BatteryLevel, data.soc);
@@ -180,7 +135,6 @@ export class VehicleAccessory {
       );
     }
 
-
     this.updateContact(this.windowsService, data.windowsOpen);
     this.updateContact(this.bootService, data.bootOpen);
 
@@ -188,6 +142,6 @@ export class VehicleAccessory {
       this.tyresService.updateCharacteristic(Characteristic.On, data.tyresOk);
     }
 
-    this.log.debug(`Characteristics updated for VIN: ${data.vin ?? this.vin}${data.restoredFromCache ? ' (cached)' : ''}`);
+    this.log.debug(`Characteristics updated for VIN: ${data.vin ?? this.vin}`);
   }
 }

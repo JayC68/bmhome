@@ -1,29 +1,17 @@
-# BMHome 0.1.0-beta.29
+# BM Home Stream 0.1.0-beta.31
 
-## Public Beta Polish
+## Telemetry-only release candidate
 
-This release removes the legacy Preconditioning tile and simplifies the Apple Home experience around the most useful BMW CarData information.
+This release completes the shift from BMHome as a possible control surface to BM Home Stream as a monitoring integration for BMW CarData telemetry.
 
-## What Changed
+## Changed
 
-- Removed unimplemented BMW Preconditioning tile
-- Simplified Apple Home layout
-- Refreshed README for public beta users
-- Updated package metadata for Homebridge 2.x compatibility
-- Improved wording around BMW CarData Stream behaviour
-
-## Apple Home Tiles
-
-BMHome now focuses on:
-
-- BMW Battery
-- BMW Lock
-- BMW Windows
-- BMW Boot
-- BMW Tyres
+- Display name changed to BM Home Stream.
+- Removed the BMW Lock HomeKit tile.
+- Removed active HomeKit lock semantics.
+- Kept the Apple Home surface focused on Battery, Windows, Boot and Tyres.
+- Clarified BMW CarData Stream limitations and token behaviour.
 
 ## Notes
 
-BMHome uses BMW CarData Stream. BMW controls which vehicle data is published and when updates arrive.
-
-Some data shown in the MyBMW app may not be emitted immediately, or at all, through CarData Stream for every vehicle.
+BMW currently limits third-party integrations primarily to telemetry. BM Home Stream does not expose lock, unlock, climate or other vehicle command controls.
