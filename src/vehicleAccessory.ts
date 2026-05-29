@@ -73,19 +73,13 @@ export class VehicleAccessory {
   private setServiceName(service: Service, name: string): void {
     const { Characteristic } = this.api.hap;
     service.setCharacteristic(Characteristic.Name, name);
-    try {
-      service.setCharacteristic(Characteristic.ConfiguredName, name);
-    } catch {
-      // ConfiguredName is not available on every Homebridge/HAP version.
-    }
+    try { service.setCharacteristic(Characteristic.ConfiguredName, name); } catch {}
   }
 
   private async fetchAndUpdate(): Promise<void> {
     try {
       const data = await this.client.getVehicleData(this.vin);
-      if (data) {
-        this.updateCharacteristics(data);
-      }
+      if (data) this.updateCharacteristics(data);
     } catch (err) {
       this.log.error('Vehicle data fetch failed', err);
     }
@@ -96,17 +90,11 @@ export class VehicleAccessory {
   }
 
   private updateContact(service: Service, isOpen?: boolean): void {
-    if (isOpen === undefined) {
-      return;
-    }
-
+    if (isOpen === undefined) return;
     const { Characteristic } = this.api.hap;
-
     service.updateCharacteristic(
       Characteristic.ContactSensorState,
-      isOpen
-        ? Characteristic.ContactSensorState.CONTACT_NOT_DETECTED
-        : Characteristic.ContactSensorState.CONTACT_DETECTED,
+      isOpen ? Characteristic.ContactSensorState.CONTACT_NOT_DETECTED : Characteristic.ContactSensorState.CONTACT_DETECTED,
     );
   }
 
@@ -117,21 +105,16 @@ export class VehicleAccessory {
       this.batteryService.updateCharacteristic(Characteristic.BatteryLevel, data.soc);
       this.batteryService.updateCharacteristic(
         Characteristic.StatusLowBattery,
-        data.soc < 20
-          ? Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW
-          : Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL,
+        data.soc < 20 ? Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL,
       );
     }
 
     if (data.isCharging !== undefined || data.chargingStatus !== undefined) {
       const status = String(data.chargingStatus || '').toLowerCase();
       const isCharging = data.isCharging === true || status.includes('charging');
-
       this.batteryService.updateCharacteristic(
         Characteristic.ChargingState,
-        isCharging
-          ? Characteristic.ChargingState.CHARGING
-          : Characteristic.ChargingState.NOT_CHARGING,
+        isCharging ? Characteristic.ChargingState.CHARGING : Characteristic.ChargingState.NOT_CHARGING,
       );
     }
 

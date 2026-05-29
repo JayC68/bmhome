@@ -20,9 +20,9 @@ export class BMWHomePlatform implements DynamicPlatformPlugin {
       this.config = validateConfig(config);
       this.config.storagePath = this.api.user.storagePath();
       this.configValid = true;
-      this.log.info(`BM Home Platform loaded - Name: ${this.config.name}`);
+      this.log.info(`BM Home Stream Platform loaded - Name: ${this.config.name}`);
     } catch (err: any) {
-      this.log.error(`BMHome config error: ${err.message}`);
+      this.log.error(`BM Home Stream config error: ${err.message}`);
       this.log.error('Plugin will not initialise until the config is corrected in the Homebridge UI.');
       return;
     }
@@ -40,16 +40,16 @@ export class BMWHomePlatform implements DynamicPlatformPlugin {
       return;
     }
 
-    this.log.info('BM Home didFinishLaunching');
+    this.log.info('BM Home Stream didFinishLaunching');
 
     const success = await this.client.initialize();
 
     if (!success) {
-      this.log.error('Failed to initialize BMW Client. Check Client ID and BMW authorisation logs.');
+      this.log.error('Failed to initialize BMW CarData client. Check Client ID and BMW authorisation logs.');
       return;
     }
 
-    const vehicleName = this.config.name || 'BM Home';
+    const vehicleName = this.config.name || 'BM Home Stream';
     const vin = this.config.vin || '';
     const uuid = this.api.hap.uuid.generate(`bmhome-${vin || 'auto'}`);
 

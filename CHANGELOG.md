@@ -1,22 +1,23 @@
 # Changelog
 
-## 0.1.0-beta.31
+## 0.1.0-beta.32
 
 ### Changed
 
-- Renamed display name to BM Home Stream.
-- Removed the BMW Lock tile and HomeKit lock semantics.
-- Repositioned the plugin as telemetry-only monitoring for BMW CarData Stream.
-- Kept Apple Home focused on Battery, Windows, Boot and Tyres.
-- Updated documentation around BMW platform limitations, token refresh and event-driven updates.
+- Final trustworthy telemetry beta before pausing active development.
+- Kept the product surface focused on BMW Battery, BMW Windows, BMW Boot and BMW Tyres.
+- Removed exposed HomeKit lock semantics from the accessory model.
+- Removed command/control code paths from the client surface.
+- Renamed the Homebridge display name to BM Home Stream.
+- Rewrote README wording around BMW CarData telemetry limitations.
 
 ### Fixed
 
 - Removed misleading HomeKit lock state when BMW does not publish trusted lock telemetry.
+- Removed old command wording from runtime messages and documentation.
 
-## 0.1.0-beta.30
+### Notes
 
-### Changed
+BM Home Stream is intentionally telemetry-only.
 
-- Repositioned BMHome as a telemetry-only BMW CarData integration for Apple Home.
-- Updated documentation around BMW CarData Stream limitations.
+BMW currently limits third-party integrations primarily to telemetry exposed through BMW CarData Stream. BM Home Stream does not attempt to bypass BMW platform restrictions.

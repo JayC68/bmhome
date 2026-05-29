@@ -3,7 +3,7 @@ import * as mqtt from 'mqtt';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
-import { BMHomePlatformConfig, VehicleData, CommandResponse } from './types';
+import { BMHomePlatformConfig, VehicleData } from './types';
 
 interface TokenStore {
   deviceCode?: string;
@@ -76,7 +76,7 @@ export class BMWClient {
   }
 
   async initialize(): Promise<boolean> {
-    console.log(`[BMWClient] Initializing BMHome CarData client for clientId: ${this.safeClientId()}`);
+    console.log(`[BMWClient] Initializing BM Home Stream CarData client for clientId: ${this.safeClientId()}`);
 
     try {
       await this.ensureAuthenticated();
@@ -109,38 +109,6 @@ export class BMWClient {
     }
 
     return null;
-  }
-
-  async lock(vin: string): Promise<CommandResponse> {
-    return {
-      success: false,
-      message: `Lock command is not implemented in BMHome yet. CarData listening is active; command/control research is pending for VIN ${vin || 'unknown'}.`,
-      command: 'lock',
-    };
-  }
-
-  async unlock(vin: string): Promise<CommandResponse> {
-    return {
-      success: false,
-      message: `Unlock command is not implemented in BMHome yet. CarData listening is active; command/control research is pending for VIN ${vin || 'unknown'}.`,
-      command: 'unlock',
-    };
-  }
-
-  async precondition(vin: string, activate: boolean): Promise<CommandResponse> {
-    return {
-      success: false,
-      message: `Preconditioning ${activate ? 'start' : 'stop'} is not implemented in BMHome yet. CarData is read/listen first.`,
-      command: 'precondition',
-    };
-  }
-
-  async startPreconditioning(vin: string): Promise<CommandResponse> {
-    return this.precondition(vin, true);
-  }
-
-  async stopPreconditioning(vin: string): Promise<CommandResponse> {
-    return this.precondition(vin, false);
   }
 
   destroy(): void {
@@ -178,7 +146,7 @@ export class BMWClient {
     }
 
     await this.startDeviceFlow();
-    throw new Error('BMW authorisation required. Check Homebridge logs for the BMW verification URL and user code, complete authorisation, then restart BMHome.');
+    throw new Error('BMW authorisation required. Check Homebridge logs for the BMW verification URL and user code, complete authorisation, then restart BM Home Stream.');
   }
 
   private async startDeviceFlow(): Promise<void> {
@@ -207,7 +175,7 @@ export class BMWClient {
     console.warn('[BMWClient] BMW CarData authorisation required');
     console.warn(`[BMWClient] Open: ${this.tokenStore.verificationUriComplete || this.tokenStore.verificationUri}`);
     console.warn(`[BMWClient] Code: ${this.tokenStore.userCode}`);
-    console.warn('[BMWClient] After approving access, restart Homebridge/BMHome.');
+    console.warn('[BMWClient] After approving access, restart Homebridge/BM Home Stream.');
     console.warn('============================================================');
   }
 
@@ -311,7 +279,7 @@ export class BMWClient {
 
       if (/Bad username or password/i.test(message)) {
         if (this.shouldLogEvery('auth', 10 * 60 * 1000)) {
-          console.error('[BMWClient] MQTT authentication failed. Token may be expired; BMHome will retry quietly.');
+          console.error('[BMWClient] MQTT authentication failed. Token may be expired; BM Home Stream will retry quietly.');
         }
         return;
       }
@@ -450,17 +418,6 @@ export class BMWClient {
       const chargingPortStatus = value('vehicle.body.chargingPort.status');
       const chargingPower = value('vehicle.powertrain.electric.battery.charging.power');
 
-      const lockRaw =
-        value('vehicle.security.centralLock.status') ??
-        value('vehicle.vehicle.lock.status');
-
-      const locked =
-        lockRaw === 'LOCKED' || lockRaw === 'SECURED' || lockRaw === true
-          ? true
-          : lockRaw === 'UNLOCKED' || lockRaw === false
-            ? false
-            : undefined;
-
       const doorsOpen = anyTrue([
         'vehicle.cabin.door.row1.driver.isOpen',
         'vehicle.cabin.door.row1.passenger.isOpen',
@@ -505,8 +462,6 @@ export class BMWClient {
         chargingPortStatus,
         chargingPower: typeof chargingPower === 'number' ? chargingPower : undefined,
         pluggedIn: chargingPortStatus === 'CONNECTED',
-        lockStatus: locked === true ? 'LOCKED' : locked === false ? 'UNLOCKED' : undefined,
-        locked,
         doorsOpen,
         bootOpen,
         windowsOpen,
@@ -526,7 +481,6 @@ export class BMWClient {
         `Charging=${data.isCharging ?? 'unknown'} ` +
         `PluggedIn=${data.pluggedIn ?? 'unknown'} ` +
         `${data.chargingPower !== undefined ? `ChargingPower=${data.chargingPower}W ` : ''}` +
-        `Lock=${data.lockStatus ?? 'unknown'} ` +
         `DoorsOpen=${data.doorsOpen ?? 'unknown'} ` +
         `WindowsOpen=${data.windowsOpen ?? 'unknown'} ` +
         `BootOpen=${data.bootOpen ?? 'unknown'} ` +
@@ -710,24 +664,6 @@ export class BMWClient {
     }
 
     return undefined;
-  }
-
-  private normaliseLockStatus(value?: string): 'locked' | 'unlocked' | 'unknown' {
-    if (!value) {
-      return 'unknown';
-    }
-
-    const lower = value.toLowerCase();
-
-    if (lower.includes('unlock') || lower === 'open') {
-      return 'unlocked';
-    }
-
-    if (lower.includes('lock') || lower === 'closed' || lower === 'secure') {
-      return 'locked';
-    }
-
-    return 'unknown';
   }
 
   private logAxiosError(err: any, context: string): void {

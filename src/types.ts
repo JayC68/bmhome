@@ -22,24 +22,16 @@ export interface VehicleData {
   chargingPortStatus?: string;
   chargingPower?: number;
   chargingStatus?: string;
-  lockStatus?: 'locked' | 'unlocked' | 'unknown' | 'LOCKED' | 'UNLOCKED';
-  locked?: boolean;
-  preconditionActive?: boolean;
   doorsOpen?: boolean;
   windowsOpen?: boolean;
   bootOpen?: boolean;
   tyrePressures?: number[];
   tyresOk?: boolean;
   vehicleBrand?: 'BMW' | 'MINI';
+  remainingFuel?: number;
   rawDescriptors?: unknown;
   restoredFromCache?: boolean;
   cachedAt?: string;
   raw?: unknown;
   timestamp: Date;
-}
-
-export interface CommandResponse {
-  success: boolean;
-  message: string;
-  command: string;
 }
